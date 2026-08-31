@@ -1,6 +1,8 @@
 # AI / ML / LLM / Agents: Zero to Architect
 
-Hi, I'm **Himanshu Kumar Dwivedi** — Technical Lead & Solution Architect, **8 years** in enterprise engineering, now building AI systems.
+Hi, I'm **Himanshu Kumar** — Technical Lead & Solution Architect, **8 years** in enterprise engineering, now building AI systems.
+
+I work at **CRISIL Ltd, an S&P Global company**, on S&P Global projects.
 
 This repo is my open log of the AI path: from maths and classical ML through to LLMs, agents, and designing AI systems that survive production.
 
@@ -30,6 +32,7 @@ I add one folder at a time as I work through a topic. Each folder holds my notes
 
 ## About me
 
+- Technical Lead & Solution Architect at **CRISIL Ltd, an S&P Global company** — currently on S&P Global projects
 - 8 years across Salesforce architecture, integrations, and enterprise GenAI
 - Built a production RAG platform with SSE streaming, citations, and semantic caching to cut LLM cost
 - Work with Python, FastAPI, Docker, LangChain-style agents, Agentforce and Data Cloud
