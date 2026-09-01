@@ -6,11 +6,11 @@ Everything I use to build production systems on Claude - the API, prompting that
 
 ## How this course is put together
 
-Each module is one HTML lesson plus notes. Every lesson follows the same shape so you can skim it later like a reference card, not re-read it like a blog post.
+Each module is one Markdown lesson you can read straight here on GitHub. Every lesson follows the same shape so you can skim it later like a reference card, not re-read it like a blog post.
 
 | Block | What it gives you |
 | --- | --- |
-| **Mental model** | The one diagram that makes the rest obvious. Animated, so the order of operations is unambiguous. |
+| **Mental model** | The one diagram that makes the rest obvious, drawn as a Mermaid flowchart with the failure path beside the happy path. |
 | **Mechanics** | Exact request/response shapes, field names, and what the API actually returns. |
 | **Build it** | Runnable code you can paste into a file and execute today. |
 | **What breaks** | The failure path: error codes, retries, partial results, and the fallback you owe your users. |
@@ -77,7 +77,9 @@ flowchart LR
 
 > **NOTE - Prefer to read it as plain text?**
 >
-> Every lesson also exists as Markdown with Mermaid diagrams, so it renders directly on GitHub with no browser needed - see [the Markdown edition](README.md). This HTML version is the one with the animations.
+> **NOTE - Everything is Markdown**
+>
+> No downloads, no build step, no browser needed. Diagrams are Mermaid, which GitHub renders inline. Start at [module 01](lessons/01-models-and-api.md) or jump anywhere from the lists below.
 
 > **NOTE - Mapped against the official curriculum**
 >
@@ -389,4 +391,4 @@ Explore a legacy org, review Apex like an architect, ship a story with a team, s
 
 ---
 
-Part of [AI / ML / LLM / Agents: Zero to Architect](../../README.md) · written by Himanshu Kumar.
+Part of [AI / ML / LLM / Agents: Zero to Architect](../README.md) · written by Himanshu Kumar.

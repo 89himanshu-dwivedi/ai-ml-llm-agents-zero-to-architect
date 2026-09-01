@@ -5,15 +5,12 @@ multi-agent design, Claude Code, Skills, MCP, evaluation and cost control.
 
 > Written by **Himanshu Kumar**. Part of [AI / ML / LLM / Agents: Zero to Architect](../README.md).
 
-**Animated course site:** open [`index.html`](index.html) in a browser (or via GitHub Pages).
-The HTML version carries the animated flow diagrams - request paths, agent loops, and the failure lane next to
-every happy path.
-
-**Reading on GitHub?** Every lesson also exists as plain Markdown with Mermaid diagrams:
-**[md/README.md](md/README.md)** - no download, no browser needed, renders inline right here.
+**All Markdown, nothing to download.** Every lesson renders right here on GitHub, with Mermaid diagrams showing
+the happy path and the failure path side by side. Start at [the course overview](index.md) or
+[module 01](lessons/01-models-and-api.md).
 
 **Coverage:** every course in [Claude Academy](https://academy.claude.com/courses) - all four collections plus the
-tutorial library - is mapped to a module here in [`academy-map.html`](academy-map.html), including an honest note on
+tutorial library - is mapped to a module here in [`academy-map.md`](academy-map.md), including an honest note on
 where the official source is the better place to learn something.
 
 ---
@@ -35,32 +32,32 @@ This course is written from that side of the line.
 
 | # | Module | Status |
 |---|--------|--------|
-| 01 | [Claude models & the Messages API](lessons/01-models-and-api.html) | Live |
-| 02 | [The Claude ecosystem: chat, Code, Cowork, plans](lessons/02-claude-ecosystem.html) | Live |
-| 03 | [Claude Code fundamentals: agentic loop, install, first session](lessons/03-claude-code-fundamentals.html) | Live |
-| 04 | [CLAUDE.md & context engineering](lessons/04-claude-md-context.html) | Live |
-| 05 | [Modes, permissions, tools, hooks](lessons/05-modes-permissions-tools.html) | Live |
-| 06 | [Sub-agents](lessons/06-subagents.html) | Live |
-| 07 | [Agent views: many sessions, one screen](lessons/07-agent-views.html) | Live |
-| 08 | [Agent teams (experimental)](lessons/08-agent-teams.html) | Live |
-| 09 | [Skills: packaging a repeatable workflow](lessons/09-skills.html) | Live |
-| 10 | [Plugins, marketplaces & MCP](lessons/10-plugins-mcp.html) | Live |
-| 11 | [Cowork, Projects, Artifacts](lessons/11-cowork-projects-artifacts.html) | Live |
-| 12 | [Evals, cost, safety & architecture case studies](lessons/12-evals-cost-architecture.html) | Live |
-| 13 | [AI Fluency: the 4D framework](lessons/13-ai-fluency-4d.html) | Live |
-| 14 | [AI capabilities & limitations: the four properties](lessons/14-ai-capabilities-limits.html) | Live |
-| 15 | [Claude 101 in practice: everyday work](lessons/15-claude-101-everyday.html) | Live |
-| 16 | [Prompt engineering that holds](lessons/16-prompt-engineering.html) | Live |
-| 17 | [The Claude Platform: Console, agent loop, built-in tools](lessons/17-platform-console-agent-loop.html) | Live |
-| 18 | [Tool use, RAG and agentic search](lessons/18-tool-use-rag.html) | Live |
-| 19 | [Agents and workflows: architecture patterns](lessons/19-agents-workflows.html) | Live |
-| 20 | [MCP advanced: sampling, roots, transports](lessons/20-mcp-advanced.html) | Live |
-| 21 | [The AI-native SDLC](lessons/21-ai-native-sdlc.html) | Live |
-| 22 | [Enterprise rollout: the five decisions](lessons/22-enterprise-rollout.html) | Live |
-| 23 | [Claude on Bedrock and Vertex AI](lessons/23-bedrock-vertex.html) | Live |
-| 24 | [Claude Code for Salesforce in VS Code](lessons/24-salesforce-claude-code.html) | Live |
-| 25 | [Salesforce sub-agents, agent teams and skills](lessons/25-salesforce-agents-skills.html) | Live |
-| - | [Claude Academy map](academy-map.html) - full official catalog mapped to these modules | Reference |
+| 01 | [Claude models & the Messages API](lessons/01-models-and-api.md) | Live |
+| 02 | [The Claude ecosystem: chat, Code, Cowork, plans](lessons/02-claude-ecosystem.md) | Live |
+| 03 | [Claude Code fundamentals: agentic loop, install, first session](lessons/03-claude-code-fundamentals.md) | Live |
+| 04 | [CLAUDE.md & context engineering](lessons/04-claude-md-context.md) | Live |
+| 05 | [Modes, permissions, tools, hooks](lessons/05-modes-permissions-tools.md) | Live |
+| 06 | [Sub-agents](lessons/06-subagents.md) | Live |
+| 07 | [Agent views: many sessions, one screen](lessons/07-agent-views.md) | Live |
+| 08 | [Agent teams (experimental)](lessons/08-agent-teams.md) | Live |
+| 09 | [Skills: packaging a repeatable workflow](lessons/09-skills.md) | Live |
+| 10 | [Plugins, marketplaces & MCP](lessons/10-plugins-mcp.md) | Live |
+| 11 | [Cowork, Projects, Artifacts](lessons/11-cowork-projects-artifacts.md) | Live |
+| 12 | [Evals, cost, safety & architecture case studies](lessons/12-evals-cost-architecture.md) | Live |
+| 13 | [AI Fluency: the 4D framework](lessons/13-ai-fluency-4d.md) | Live |
+| 14 | [AI capabilities & limitations: the four properties](lessons/14-ai-capabilities-limits.md) | Live |
+| 15 | [Claude 101 in practice: everyday work](lessons/15-claude-101-everyday.md) | Live |
+| 16 | [Prompt engineering that holds](lessons/16-prompt-engineering.md) | Live |
+| 17 | [The Claude Platform: Console, agent loop, built-in tools](lessons/17-platform-console-agent-loop.md) | Live |
+| 18 | [Tool use, RAG and agentic search](lessons/18-tool-use-rag.md) | Live |
+| 19 | [Agents and workflows: architecture patterns](lessons/19-agents-workflows.md) | Live |
+| 20 | [MCP advanced: sampling, roots, transports](lessons/20-mcp-advanced.md) | Live |
+| 21 | [The AI-native SDLC](lessons/21-ai-native-sdlc.md) | Live |
+| 22 | [Enterprise rollout: the five decisions](lessons/22-enterprise-rollout.md) | Live |
+| 23 | [Claude on Bedrock and Vertex AI](lessons/23-bedrock-vertex.md) | Live |
+| 24 | [Claude Code for Salesforce in VS Code](lessons/24-salesforce-claude-code.md) | Live |
+| 25 | [Salesforce sub-agents, agent teams and skills](lessons/25-salesforce-agents-skills.md) | Live |
+| - | [Claude Academy map](academy-map.md) - full official catalog mapped to these modules | Reference |
 
 Every module follows the same six blocks: **mental model → mechanics → build it → what breaks → cost & latency →
 interview drill**.

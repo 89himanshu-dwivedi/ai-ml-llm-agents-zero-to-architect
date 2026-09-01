@@ -24,6 +24,16 @@ Useful if you're an experienced engineer moving into AI and you want the enginee
 
 ---
 
+## Courses in this repo
+
+| Course | Size | Start here |
+| --- | --- | --- |
+| **Claude AI (Anthropic): Zero to Architect** - API, Claude Code, sub-agents, agent views and teams, skills, plugins, MCP, Cowork, evals, enterprise rollout and Salesforce | 25 modules | [claude-ai-anthropic](claude-ai-anthropic/README.md) |
+
+Everything is Markdown with Mermaid diagrams, so it reads directly on GitHub - no downloads, no build step.
+
+---
+
 ## How this repo is built
 
 I add one folder at a time as I work through a topic. Each folder holds my notes plus runnable code.
