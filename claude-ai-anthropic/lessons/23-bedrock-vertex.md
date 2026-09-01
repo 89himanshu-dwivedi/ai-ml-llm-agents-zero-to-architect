@@ -27,14 +27,14 @@ flowchart LR
     N2["Amazon Bedrock"]
     N3["Google Vertex AI"]
     N4["Claude"]
-    N0 -- "API key" --> N1
-    N1 -- "inference" --> N4
-    N4 -- "IAM role" --> N0
-    N0 -- "inference" --> N2
-    N2 -- "service account" --> N4
-    N4 -- "inference" --> N0
-    N0 -- "response" --> N3
-    N3 -- "response" --> N4
+    N0 -->|"API key"| N1
+    N1 -->|"inference"| N4
+    N4 -->|"IAM role"| N0
+    N0 -->|"inference"| N2
+    N2 -->|"service account"| N4
+    N4 -->|"inference"| N0
+    N0 -->|"response"| N3
+    N3 -->|"response"| N4
 ```
 
 > **Why it matters:** The model is the same. What changes is authentication, region behaviour, model identifiers, and how quickly new features arrive.

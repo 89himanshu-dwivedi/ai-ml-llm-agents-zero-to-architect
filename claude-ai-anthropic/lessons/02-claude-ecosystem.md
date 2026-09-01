@@ -34,7 +34,7 @@ flowchart LR
     F2["Model cannot run tests"]
     F3["You copy edits back by hand"]
     F4["Switch to Claude Code"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

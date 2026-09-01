@@ -26,7 +26,7 @@ flowchart LR
     F2["Orphaned accounts, messy offboarding"]
     F3["Governance bolted on"]
     F4["Painful migration"]
-    S0 -. fails .-> F0
+    S0 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

@@ -28,7 +28,7 @@ flowchart LR
     F2["Exponential backoff + jitter"]
     F3["Retry idempotent"]
     F4["Fall back to smaller model or queue"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -184,7 +184,7 @@ flowchart LR
     F2["Keep last N turns verbatim"]
     F3["Move facts to a store, retrieve on demand"]
     F4["Cache the stable prefix"]
-    S4 -. fails .-> F0
+    S4 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -213,12 +213,12 @@ flowchart LR
     N0["Browser"]
     N1["Your API"]
     N2["Claude API"]
-    N0 -- "POST /chat" --> N1
-    N1 -- "stream=true" --> N2
-    N2 -- "content_block_delta" --> N1
-    N1 -- "SSE chunk" --> N0
-    N0 -- "more deltas" --> N1
-    N1 -- "message_stop" --> N0
+    N0 -->|"POST /chat"| N1
+    N1 -->|"stream=true"| N2
+    N2 -->|"content_block_delta"| N1
+    N1 -->|"SSE chunk"| N0
+    N0 -->|"more deltas"| N1
+    N1 -->|"message_stop"| N0
 ```
 
 > **Why it matters:** Proxy the stream through your own backend. A browser calling Anthropic directly means your API key is in the client - that key is then public, permanently.

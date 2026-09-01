@@ -30,7 +30,7 @@ flowchart LR
     F2["Act again"]
     F3["Re-verify"]
     F4["Escalate to you if it stalls"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -98,16 +98,16 @@ flowchart LR
     N2["Your repo"]
     N3["Claude model"]
     N4["Tools / MCP"]
-    N0 -- "prompt" --> N1
-    N1 -- "read files" --> N2
-    N2 -- "context" --> N1
-    N1 -- "request" --> N3
-    N3 -- "plan + tool calls" --> N1
-    N1 -- "run tool" --> N4
-    N4 -- "result" --> N1
-    N1 -- "apply edit" --> N2
-    N2 -- "diff" --> N1
-    N1 -- "review" --> N0
+    N0 -->|"prompt"| N1
+    N1 -->|"read files"| N2
+    N2 -->|"context"| N1
+    N1 -->|"request"| N3
+    N3 -->|"plan + tool calls"| N1
+    N1 -->|"run tool"| N4
+    N4 -->|"result"| N1
+    N1 -->|"apply edit"| N2
+    N2 -->|"diff"| N1
+    N1 -->|"review"| N0
 ```
 
 > **Why it matters:** The CLI is the only thing touching your disk. The model sees what the CLI sends it - which is why folder scope and CLAUDE.md matter more than prompt wording.

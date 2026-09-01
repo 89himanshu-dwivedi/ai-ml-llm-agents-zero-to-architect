@@ -52,7 +52,7 @@ flowchart LR
     F2["Return the error as tool_result"]
     F3["Model asks the user or retries correctly"]
     F4["Never pass unvalidated input through"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -79,12 +79,12 @@ flowchart LR
     N3["Retriever"]
     N4["Reranker"]
     N5["Claude"]
-    N0 -- "ingest" --> N1
-    N1 -- "chunks + metadata" --> N2
-    N2 -- "index" --> N3
-    N3 -- "hybrid query" --> N2
-    N2 -- "candidates" --> N4
-    N4 -- "top-k" --> N5
+    N0 -->|"ingest"| N1
+    N1 -->|"chunks + metadata"| N2
+    N2 -->|"index"| N3
+    N3 -->|"hybrid query"| N2
+    N2 -->|"candidates"| N4
+    N4 -->|"top-k"| N5
 ```
 
 > **Why it matters:** Most bad RAG is bad retrieval, not a bad model. If the right passage never reaches the prompt, no amount of prompt tuning saves the answer.

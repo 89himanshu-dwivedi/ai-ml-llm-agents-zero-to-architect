@@ -26,7 +26,7 @@ flowchart LR
     F2["See status of every session"]
     F3["Jump only to the one needing input"]
     F4["Nothing sits idle"]
-    S0 -. fails .-> F0
+    S0 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

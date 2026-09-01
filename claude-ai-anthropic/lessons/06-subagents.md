@@ -18,12 +18,12 @@ flowchart LR
     N1["Main agent"]
     N2["Sub-agent own context"]
     N3["Codebase"]
-    N0 -- "task" --> N1
-    N1 -- "delegate with a prompt" --> N2
-    N2 -- "read 400 files" --> N3
-    N3 -- "raw output stays here" --> N2
-    N2 -- "summary only" --> N1
-    N1 -- "answer" --> N0
+    N0 -->|"task"| N1
+    N1 -->|"delegate with a prompt"| N2
+    N2 -->|"read 400 files"| N3
+    N3 -->|"raw output stays here"| N2
+    N2 -->|"summary only"| N1
+    N1 -->|"answer"| N0
 ```
 
 > **Why it matters:** The sub-agent cannot see your conversation. It only gets the prompt you hand it - so that prompt must be self-contained.
@@ -132,7 +132,7 @@ flowchart LR
     F2["Diff is unreviewable"]
     F3["Real bugs hide in the noise"]
     F4["Revert everything"]
-    S0 -. fails .-> F0
+    S0 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

@@ -42,7 +42,7 @@ flowchart LR
     F2["Higher latency, worse UX"]
     F3["No evidence it was needed"]
     F4["Traffic grows, budget breaks"]
-    S0 -. fails .-> F0
+    S0 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -141,13 +141,13 @@ flowchart LR
     N2["Model + tools"]
     N3["Managed agent service"]
     N4["Event stream"]
-    N0 -- "request" --> N1
-    N1 -- "you orchestrate" --> N2
-    N2 -- "tool results" --> N1
-    N1 -- "you decide next step" --> N0
-    N0 -- "or: hand off the goal" --> N3
-    N3 -- "Anthropic runs the loop" --> N4
-    N4 -- "progress + result" --> N0
+    N0 -->|"request"| N1
+    N1 -->|"you orchestrate"| N2
+    N2 -->|"tool results"| N1
+    N1 -->|"you decide next step"| N0
+    N0 -->|"or: hand off the goal"| N3
+    N3 -->|"Anthropic runs the loop"| N4
+    N4 -->|"progress + result"| N0
 ```
 
 > **Why it matters:** Run your own loop when you need custom control flow, your own tools and full observability. Hand it off when you want a sandboxed agent without operating the loop yourself - and consume the event stream so you still see what happened.

@@ -30,16 +30,16 @@ flowchart LR
     N2["Claude API"]
     N3["Tool / MCP server"]
     N4["Data source"]
-    N0 -- "user request" --> N1
-    N1 -- "messages + tools" --> N2
-    N2 -- "tool_use block" --> N1
-    N1 -- "invoke tool" --> N3
-    N3 -- "query" --> N4
-    N4 -- "rows" --> N3
-    N3 -- "tool_result" --> N1
-    N1 -- "second call" --> N2
-    N2 -- "final text" --> N1
-    N1 -- "stream to UI" --> N0
+    N0 -->|"user request"| N1
+    N1 -->|"messages + tools"| N2
+    N2 -->|"tool_use block"| N1
+    N1 -->|"invoke tool"| N3
+    N3 -->|"query"| N4
+    N4 -->|"rows"| N3
+    N3 -->|"tool_result"| N1
+    N1 -->|"second call"| N2
+    N2 -->|"final text"| N1
+    N1 -->|"stream to UI"| N0
 ```
 
 > **Why it matters:** Claude never calls your tool. It asks for one. Your orchestrator executes it and hands the result back - which means every retry, timeout and permission check is your code, not the model's.
@@ -64,7 +64,7 @@ flowchart LR
     F2["Send error as tool_result"]
     F3["Model degrades to a text answer"]
     F4["Log + alert"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

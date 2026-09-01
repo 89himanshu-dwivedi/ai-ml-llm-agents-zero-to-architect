@@ -47,7 +47,7 @@ flowchart LR
     F2["Diagnose: was it description or delegation?"]
     F3["Refine the description"]
     F4["Re-run and re-evaluate"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

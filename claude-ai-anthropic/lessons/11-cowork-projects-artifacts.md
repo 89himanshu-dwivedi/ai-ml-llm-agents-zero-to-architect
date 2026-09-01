@@ -28,7 +28,7 @@ flowchart LR
     F2["Findings get diluted"]
     F3["Scope to a subfolder"]
     F4["Re-run: fast and accurate"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -108,7 +108,7 @@ flowchart LR
     F2["Find the misread document"]
     F3["Add the rule to your instructions file"]
     F4["Re-run and re-check"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

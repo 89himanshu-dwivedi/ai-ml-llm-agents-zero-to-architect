@@ -34,7 +34,7 @@ flowchart LR
     F2["Context lost between messages"]
     F3["Result is not reproducible"]
     F4["Move it to Cowork or Code"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

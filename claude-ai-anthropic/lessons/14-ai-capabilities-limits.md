@@ -53,7 +53,7 @@ flowchart LR
     F2["You cannot tell from the tone"]
     F3["Verify externally"]
     F4["Add retrieval and re-ask"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -103,11 +103,11 @@ flowchart LR
     N2["Where on the spectrum?"]
     N3["Targeted fix"]
     N4["Re-run"]
-    N0 -- "observe" --> N1
-    N1 -- "prediction / knowledge / memory / steering" --> N2
-    N2 -- "capability or limit end?" --> N3
-    N3 -- "sources, chunking, or rewrite" --> N4
-    N4 -- "verify" --> N0
+    N0 -->|"observe"| N1
+    N1 -->|"prediction / knowledge / memory / steering"| N2
+    N2 -->|"capability or limit end?"| N3
+    N3 -->|"sources, chunking, or rewrite"| N4
+    N4 -->|"verify"| N0
 ```
 
 > **Why it matters:** Generic retry is the anti-pattern. Name the property, place the task on its spectrum, apply the matching fix.

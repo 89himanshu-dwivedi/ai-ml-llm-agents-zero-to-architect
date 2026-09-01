@@ -30,7 +30,7 @@ flowchart LR
     F2["Output format drifts"]
     F3["Rewrite the description with trigger words"]
     F4["Skill fires correctly next time"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -137,12 +137,12 @@ flowchart LR
     N2["Plugin search / docs"]
     N3["External service"]
     N4["Formatted output"]
-    N0 -- "/research-topic X" --> N1
-    N1 -- "step 2 needs search" --> N2
-    N2 -- "query" --> N3
-    N3 -- "results" --> N2
-    N2 -- "structured per skill rules" --> N1
-    N1 -- "brief" --> N4
+    N0 -->|"/research-topic X"| N1
+    N1 -->|"step 2 needs search"| N2
+    N2 -->|"query"| N3
+    N3 -->|"results"| N2
+    N2 -->|"structured per skill rules"| N1
+    N1 -->|"brief"| N4
 ```
 
 > **Why it matters:** Skill = the procedure and the output contract. Plugin = the capability. Keep them separate so you can swap the search provider without rewriting the workflow.

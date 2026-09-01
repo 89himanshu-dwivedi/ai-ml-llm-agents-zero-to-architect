@@ -105,7 +105,7 @@ flowchart LR
     F2["Cannot keep the good half"]
     F3["Revert to baseline"]
     F4["Change one variable at a time"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

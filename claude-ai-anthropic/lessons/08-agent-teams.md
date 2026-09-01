@@ -27,15 +27,15 @@ flowchart LR
     N2["Shared task list"]
     N3["Teammate A"]
     N4["Teammate B"]
-    N0 -- "goal" --> N1
-    N1 -- "create tasks" --> N2
-    N2 -- "claim task" --> N3
-    N3 -- "update status" --> N2
-    N2 -- "claim next" --> N4
-    N4 -- "A messages B" --> N3
-    N3 -- "B replies" --> N4
-    N4 -- "report" --> N1
-    N1 -- "consolidated result" --> N0
+    N0 -->|"goal"| N1
+    N1 -->|"create tasks"| N2
+    N2 -->|"claim task"| N3
+    N3 -->|"update status"| N2
+    N2 -->|"claim next"| N4
+    N4 -->|"A messages B"| N3
+    N3 -->|"B replies"| N4
+    N4 -->|"report"| N1
+    N1 -->|"consolidated result"| N0
 ```
 
 > **Why it matters:** The shared task list is the coordination substrate. Without it two agents duplicate work; with it they can see what is claimed, what is blocked and what is done.
@@ -98,7 +98,7 @@ flowchart LR
     F2["Reports nothing useful"]
     F3["Marks the task done anyway"]
     F4["Fix: mark task 2 blocked by task 1"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

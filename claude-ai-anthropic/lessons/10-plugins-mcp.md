@@ -49,11 +49,11 @@ flowchart LR
     N1["MCP server"]
     N2["External system"]
     N3["Result in context"]
-    N0 -- "tool call" --> N1
-    N1 -- "authenticated request" --> N2
-    N2 -- "rows / documents" --> N1
-    N1 -- "tool result" --> N0
-    N0 -- "grounded answer" --> N3
+    N0 -->|"tool call"| N1
+    N1 -->|"authenticated request"| N2
+    N2 -->|"rows / documents"| N1
+    N1 -->|"tool result"| N0
+    N0 -->|"grounded answer"| N3
 ```
 
 > **Why it matters:** The MCP server holds the credentials, not the model. That boundary is what makes the pattern safe enough to use with internal systems.
@@ -138,7 +138,7 @@ flowchart LR
     F2["Returned data attempts injection"]
     F3["Credentials scoped read-only limit damage"]
     F4["Deny rules + review catch the rest"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

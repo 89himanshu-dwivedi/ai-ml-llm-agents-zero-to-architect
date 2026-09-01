@@ -35,7 +35,7 @@ flowchart LR
     F2["You review code instead of intent"]
     F3["Revert and start over"]
     F4["Time lost, tokens spent"]
-    S2 -. fails .-> F0
+    S2 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -139,11 +139,11 @@ flowchart LR
     N2["Tool runs"]
     N3["PostToolUse hook"]
     N4["Result to agent"]
-    N0 -- "intent" --> N1
-    N1 -- "allow / block" --> N2
-    N2 -- "side effect" --> N3
-    N3 -- "format + lint" --> N4
-    N4 -- "next iteration" --> N0
+    N0 -->|"intent"| N1
+    N1 -->|"allow / block"| N2
+    N2 -->|"side effect"| N3
+    N3 -->|"format + lint"| N4
+    N4 -->|"next iteration"| N0
 ```
 
 > **Why it matters:** Hooks are deterministic code, not instructions. If a policy must always hold, a hook enforces it; a sentence in a prompt only suggests it.
@@ -192,7 +192,7 @@ flowchart LR
     F2["Permission deny rule blocks it"]
     F3["Hook logs the attempt"]
     F4["You review and tighten scope"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

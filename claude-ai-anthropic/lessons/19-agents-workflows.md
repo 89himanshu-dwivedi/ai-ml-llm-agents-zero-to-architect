@@ -37,12 +37,12 @@ flowchart LR
     N2["Simple handler"]
     N3["Complex handler"]
     N4["Response"]
-    N0 -- "input" --> N1
-    N1 -- "classify" --> N2
-    N2 -- "cheap path" --> N4
-    N4 -- "or escalate" --> N1
-    N1 -- "deep path" --> N3
-    N3 -- "answer" --> N4
+    N0 -->|"input"| N1
+    N1 -->|"classify"| N2
+    N2 -->|"cheap path"| N4
+    N4 -->|"or escalate"| N1
+    N1 -->|"deep path"| N3
+    N3 -->|"answer"| N4
 ```
 
 > **Why it matters:** A small model deciding which big model to call is the highest-leverage cost optimisation in most systems - but the router itself needs an eval, because a misroute is invisible until quality drops.
@@ -77,7 +77,7 @@ flowchart LR
     F2["Cost climbs, quality plateaus"]
     F3["Cap at 2 rounds"]
     F4["Escalate to a human instead"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

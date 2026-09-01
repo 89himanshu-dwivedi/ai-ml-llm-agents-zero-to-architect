@@ -30,13 +30,13 @@ flowchart LR
     N2["Explore sub-agent"]
     N3["4,000 metadata files"]
     N4["docs/org-architecture.md"]
-    N0 -- "ask" --> N1
-    N1 -- "delegate" --> N2
-    N2 -- "read wide" --> N3
-    N3 -- "raw output stays here" --> N2
-    N2 -- "summary only" --> N1
-    N1 -- "write file" --> N4
-    N4 -- "review" --> N0
+    N0 -->|"ask"| N1
+    N1 -->|"delegate"| N2
+    N2 -->|"read wide"| N3
+    N3 -->|"raw output stays here"| N2
+    N2 -->|"summary only"| N1
+    N1 -->|"write file"| N4
+    N4 -->|"review"| N0
 ```
 
 > **Why it matters:** The raw metadata never enters your main window. You get a brief, and a file on disk that survives the session.
@@ -124,7 +124,7 @@ flowchart LR
     F2["Builder refactors to a Map lookup"]
     F3["Tests re-run green"]
     F4["Reviewer signs off"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

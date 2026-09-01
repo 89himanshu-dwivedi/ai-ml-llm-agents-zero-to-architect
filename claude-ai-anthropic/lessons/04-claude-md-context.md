@@ -28,7 +28,7 @@ flowchart LR
     F2["Burns context on discovery"]
     F3["Guesses your conventions"]
     F4["You correct it - again"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -140,7 +140,7 @@ flowchart LR
     F2["Re-does solved work"]
     F3["Write decisions to a file instead"]
     F4["Start a clean session and point at that file"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

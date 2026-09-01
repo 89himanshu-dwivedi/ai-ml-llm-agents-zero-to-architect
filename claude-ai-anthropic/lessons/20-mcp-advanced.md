@@ -18,12 +18,12 @@ flowchart LR
     N1["Client"]
     N2["Model"]
     N3["Human approval"]
-    N0 -- "sampling request" --> N1
-    N1 -- "show to user" --> N3
-    N3 -- "approve" --> N1
-    N1 -- "call model" --> N2
-    N2 -- "completion" --> N1
-    N1 -- "result back to server" --> N0
+    N0 -->|"sampling request"| N1
+    N1 -->|"show to user"| N3
+    N3 -->|"approve"| N1
+    N1 -->|"call model"| N2
+    N2 -->|"completion"| N1
+    N1 -->|"result back to server"| N0
 ```
 
 > **Why it matters:** The server needs no API key and pays no inference cost - the client does. That is the whole point: cost and model choice stay with the user, not with every server author.
@@ -95,7 +95,7 @@ flowchart LR
     F2["Scales horizontally"]
     F3["But: no server-initiated requests"]
     F4["Sampling and progress are lost"]
-    S1 -. fails .-> F0
+    S1 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3

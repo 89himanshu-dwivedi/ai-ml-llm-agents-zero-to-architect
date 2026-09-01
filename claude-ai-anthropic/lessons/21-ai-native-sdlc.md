@@ -26,7 +26,7 @@ flowchart LR
     F2["Reviewers skim to keep up"]
     F3["Under-reviewed code ships"]
     F4["Or: throughput gains evaporate"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -115,11 +115,11 @@ flowchart LR
     N2["CI checks"]
     N3["Merge"]
     N4["Control band breach"]
-    N0 -- "intends to write" --> N1
-    N1 -- "allow / block" --> N2
-    N2 -- "tests + policy" --> N3
-    N3 -- "reviewed PR" --> N4
-    N4 -- "write back as new intent.md" --> N0
+    N0 -->|"intends to write"| N1
+    N1 -->|"allow / block"| N2
+    N2 -->|"tests + policy"| N3
+    N3 -->|"reviewed PR"| N4
+    N4 -->|"write back as new intent.md"| N0
 ```
 
 > **Why it matters:** Close the loop: when a control band is breached - too many escaped defects, cost per task too high, review time climbing - that becomes a new intent.md and the process changes. Governance is a feedback system, not a document.

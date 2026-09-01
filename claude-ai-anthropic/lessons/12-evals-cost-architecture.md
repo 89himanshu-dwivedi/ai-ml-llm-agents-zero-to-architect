@@ -28,7 +28,7 @@ flowchart LR
     F2["Cannot revert the bad part"]
     F3["Revert all, change one variable"]
     F4["Re-measure"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -88,14 +88,14 @@ flowchart LR
     N2["CLAUDE.md + docs"]
     N3["Repo"]
     N4["Explore sub-agent"]
-    N0 -- "question" --> N1
-    N1 -- "load memory" --> N2
-    N2 -- "conventions" --> N1
-    N1 -- "delegate search" --> N4
-    N4 -- "read wide" --> N3
-    N3 -- "findings" --> N4
-    N4 -- "grounded answer" --> N1
-    N1 -- "walkthrough" --> N0
+    N0 -->|"question"| N1
+    N1 -->|"load memory"| N2
+    N2 -->|"conventions"| N1
+    N1 -->|"delegate search"| N4
+    N4 -->|"read wide"| N3
+    N3 -->|"findings"| N4
+    N4 -->|"grounded answer"| N1
+    N1 -->|"walkthrough"| N0
 ```
 
 > **Why it matters:** The valuable artifact is not the chat - it is the CLAUDE.md the team maintains. The assistant is just the interface to it.

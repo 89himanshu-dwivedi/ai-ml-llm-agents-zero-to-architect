@@ -177,7 +177,7 @@ flowchart LR
     F2["Fix the class or the test"]
     F3["Re-run tests"]
     F4["Only then validate the deploy"]
-    S3 -. fails .-> F0
+    S3 -.->|"fails"| F0
     F0 --> F1
     F1 --> F2
     F2 --> F3
@@ -197,14 +197,14 @@ flowchart LR
     N2["SFDX project files"]
     N3["sf CLI"]
     N4["Sandbox org"]
-    N0 -- "prompt" --> N1
-    N1 -- "read metadata" --> N2
-    N2 -- "context" --> N1
-    N1 -- "run tests" --> N3
-    N3 -- "execute" --> N4
-    N4 -- "results" --> N3
-    N3 -- "diagnose" --> N1
-    N1 -- "diff to review" --> N0
+    N0 -->|"prompt"| N1
+    N1 -->|"read metadata"| N2
+    N2 -->|"context"| N1
+    N1 -->|"run tests"| N3
+    N3 -->|"execute"| N4
+    N4 -->|"results"| N3
+    N3 -->|"diagnose"| N1
+    N1 -->|"diff to review"| N0
 ```
 
 > **Why it matters:** Every org interaction goes through the sf CLI, which means your permission rules are the control point for everything the agent can do to a real org.
