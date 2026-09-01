@@ -87,8 +87,7 @@ flowchart LR
 
 ## Part 1 · Foundations, Claude Code & agents
 
-### [Claude models & the Messages API Start here](lessons/01-models-and-api.md)
-
+### [Claude models & the Messages API](lessons/01-models-and-api.md) &nbsp; `Start here`
 `MODULE 01`
 
 Model families and when each one is the right call. Messages API end to end.
@@ -98,8 +97,7 @@ Model families and when each one is the right call. Messages API end to end.
 - streaming, temperature, max_tokens
 - token maths and how billing really works
 
-### [The Claude ecosystem Ready](lessons/02-claude-ecosystem.md)
-
+### [The Claude ecosystem](lessons/02-claude-ecosystem.md)
 `MODULE 02`
 
 Chat, Claude Code, Cowork, desktop, extensions, API - and which door to open.
@@ -109,8 +107,7 @@ Chat, Claude Code, Cowork, desktop, extensions, API - and which door to open.
 - subscription cost vs per-token cost
 - the trust decision before you grant folder access
 
-### [Claude Code fundamentals Ready](lessons/03-claude-code-fundamentals.md)
-
+### [Claude Code fundamentals](lessons/03-claude-code-fundamentals.md)
 `MODULE 03`
 
 The agentic loop, install on any OS, IDE + terminal, and your first real session.
@@ -120,8 +117,7 @@ The agentic loop, install on any OS, IDE + terminal, and your first real session
 - the commands worth learning on day one
 - resume, continue, and headless `claude -p`
 
-### [CLAUDE.md & context engineering Ready](lessons/04-claude-md-context.md)
-
+### [CLAUDE.md & context engineering](lessons/04-claude-md-context.md)
 `MODULE 04`
 
 The memory hierarchy, `/init`, reading `/context`, and compaction.
@@ -131,8 +127,7 @@ The memory hierarchy, `/init`, reading `/context`, and compaction.
 - reading the context breakdown
 - habits that keep an agent sharp
 
-### [Modes, permissions, tools, hooks Ready](lessons/05-modes-permissions-tools.md)
-
+### [Modes, permissions, tools, hooks](lessons/05-modes-permissions-tools.md)
 `MODULE 05`
 
 Plan mode, allow/ask/deny rules, hooks as hard gates, custom slash commands.
@@ -142,8 +137,7 @@ Plan mode, allow/ask/deny rules, hooks as hard gates, custom slash commands.
 - hooks: deterministic, not suggested
 - prompt injection defence in depth
 
-### [Sub-agents Ready](lessons/06-subagents.md)
-
+### [Sub-agents](lessons/06-subagents.md)
 `MODULE 06`
 
 Delegation with a clean context: create, scope, run, and know when not to.
@@ -153,8 +147,7 @@ Delegation with a clean context: create, scope, run, and know when not to.
 - read-only reviewers vs editors
 - description = the routing mechanism
 
-### [Agent views Ready](lessons/07-agent-views.md)
-
+### [Agent views](lessons/07-agent-views.md)
 `MODULE 07`
 
 Many parallel sessions on one screen: working, needs input, completed.
@@ -164,8 +157,7 @@ Many parallel sessions on one screen: working, needs input, completed.
 - worktrees for write-heavy tasks
 - why review becomes the new bottleneck
 
-### [Agent teams Experimental](lessons/08-agent-teams.md)
-
+### [Agent teams](lessons/08-agent-teams.md) &nbsp; `Experimental`
 `MODULE 08`
 
 Persistent teammates, a shared task list, and peer-to-peer messaging.
@@ -175,8 +167,7 @@ Persistent teammates, a shared task list, and peer-to-peer messaging.
 - dependencies and blocked tasks
 - why coordination costs real money
 
-### [Skills Ready](lessons/09-skills.md)
-
+### [Skills](lessons/09-skills.md)
 `MODULE 09`
 
 Package a repeatable workflow as SKILL.md, loaded only when it is needed.
@@ -186,8 +177,7 @@ Package a repeatable workflow as SKILL.md, loaded only when it is needed.
 - skill vs sub-agent vs slash command
 - skills that call plugins - with fallbacks
 
-### [Plugins, marketplaces & MCP Ready](lessons/10-plugins-mcp.md)
-
+### [Plugins, marketplaces & MCP](lessons/10-plugins-mcp.md)
 `MODULE 10`
 
 Capability, not just instructions: live docs, deep search, your own systems.
@@ -197,8 +187,7 @@ Capability, not just instructions: live docs, deep search, your own systems.
 - building a minimal MCP server
 - the supply-chain threat model
 
-### [Cowork, Projects, Artifacts Ready](lessons/11-cowork-projects-artifacts.md)
-
+### [Cowork, Projects, Artifacts](lessons/11-cowork-projects-artifacts.md)
 `MODULE 11`
 
 Agentic work outside code - for analysts, managers and non-developers.
@@ -208,8 +197,7 @@ Agentic work outside code - for analysts, managers and non-developers.
 - artifacts you can actually review
 - verification without writing any code
 
-### [Evals, cost, safety & architecture Capstone](lessons/12-evals-cost-architecture.md)
-
+### [Evals, cost, safety & architecture](lessons/12-evals-cost-architecture.md) &nbsp; `Capstone`
 `MODULE 12`
 
 The module that decides if any of it ships - plus three case studies.
@@ -223,8 +211,7 @@ The module that decides if any of it ships - plus three case studies.
 
 Built from the full Claude Academy catalog - AI fluency, the platform and API deep dive, advanced MCP, the AI-native SDLC and enterprise rollout.
 
-### [AI Fluency: the 4D framework Ready](lessons/13-ai-fluency-4d.md)
-
+### [AI Fluency: the 4D framework](lessons/13-ai-fluency-4d.md)
 `MODULE 13 · TRACK A`
 
 Delegation, Description, Discernment, Diligence - the competencies that outlive every model release.
@@ -234,8 +221,7 @@ Delegation, Description, Discernment, Diligence - the competencies that outlive 
 - the Description-Discernment loop
 - AI diligence statements
 
-### [Capabilities & limitations Ready](lessons/14-ai-capabilities-limits.md)
-
+### [Capabilities & limitations](lessons/14-ai-capabilities-limits.md)
 `MODULE 14 · TRACK A`
 
 Four properties that explain almost every surprising thing a model does.
@@ -245,8 +231,7 @@ Four properties that explain almost every surprising thing a model does.
 - sycophancy, verbosity, over-caution
 - a diagnostic for any bad output
 
-### [Claude 101 in practice Ready](lessons/15-claude-101-everyday.md)
-
+### [Claude 101 in practice](lessons/15-claude-101-everyday.md)
 `MODULE 15 · TRACK A`
 
 Everyday work: the three shapes of work, Projects, Artifacts, Connectors, Research.
@@ -256,8 +241,7 @@ Everyday work: the three shapes of work, Projects, Artifacts, Connectors, Resear
 - Enterprise Search and permission risk
 - role-based starting points
 
-### [Prompt engineering that holds Ready](lessons/16-prompt-engineering.md)
-
+### [Prompt engineering that holds](lessons/16-prompt-engineering.md)
 `MODULE 16 · TRACK C`
 
 Structure over cleverness, and an eval loop so you can prove a change helped.
@@ -267,8 +251,7 @@ Structure over cleverness, and an eval loop so you can prove a change helped.
 - structured output that actually parses
 - code-based vs model-based grading
 
-### [The Claude Platform Ready](lessons/17-platform-console-agent-loop.md)
-
+### [The Claude Platform](lessons/17-platform-console-agent-loop.md)
 `MODULE 17 · TRACK C`
 
 Console, model choice by measurement, and the agent loop written by hand.
@@ -278,8 +261,7 @@ Console, model choice by measurement, and the agent loop written by hand.
 - built-in tools: search, fetch, code execution
 - context patterns and managed agents
 
-### [Tool use, RAG & agentic search Ready](lessons/18-tool-use-rag.md)
-
+### [Tool use, RAG & agentic search](lessons/18-tool-use-rag.md)
 `MODULE 18 · TRACK C`
 
 Schema design, then production retrieval that actually finds the right passage.
@@ -289,8 +271,7 @@ Schema design, then production retrieval that actually finds the right passage.
 - citations, vision, PDFs
 - caching and batch ingestion
 
-### [Agents & workflows Ready](lessons/19-agents-workflows.md)
-
+### [Agents & workflows](lessons/19-agents-workflows.md)
 `MODULE 19 · TRACK C`
 
 Six architecture patterns - and why most projects should pick the simpler one.
@@ -300,8 +281,7 @@ Six architecture patterns - and why most projects should pick the simpler one.
 - computer use and where it belongs
 - debugging by trajectory, not by vibes
 
-### [MCP: advanced topics Ready](lessons/20-mcp-advanced.md)
-
+### [MCP: advanced topics](lessons/20-mcp-advanced.md)
 `MODULE 20 · TRACK D`
 
 The protocol itself: sampling, notifications, roots, transports, scaling.
@@ -311,8 +291,7 @@ The protocol itself: sampling, notifications, roots, transports, scaling.
 - stdio handshake and the stdout trap
 - stateful vs stateless HTTP trade-off
 
-### [The AI-native SDLC Ready](lessons/21-ai-native-sdlc.md)
-
+### [The AI-native SDLC](lessons/21-ai-native-sdlc.md)
 `MODULE 21 · TRACK E`
 
 When code generation gets 10x faster, review becomes the bottleneck. Fix the process.
@@ -322,8 +301,7 @@ When code generation gets 10x faster, review becomes the bottleneck. Fix the pro
 - deterministic / agentic / human review layers
 - hooks as governance gates, control bands
 
-### [Enterprise rollout Ready](lessons/22-enterprise-rollout.md)
-
+### [Enterprise rollout](lessons/22-enterprise-rollout.md)
 `MODULE 22 · TRACK E`
 
 The five decisions that decide whether Claude becomes infrastructure or shelfware.
@@ -333,8 +311,7 @@ The five decisions that decide whether Claude becomes infrastructure or shelfwar
 - visibility and audit
 - how each decision cascades
 
-### [Bedrock & Vertex AI Ready](lessons/23-bedrock-vertex.md)
-
+### [Bedrock & Vertex AI](lessons/23-bedrock-vertex.md)
 `MODULE 23 · TRACK C`
 
 Same models, different front door: auth, regions, residency, parity.
@@ -344,8 +321,7 @@ Same models, different front door: auth, regions, residency, parity.
 - the feature-parity lag
 - a portable client seam in 8 lines
 
-### [Claude Academy map Index](academy-map.md)
-
+### [Claude Academy map](academy-map.md) &nbsp; `Index`
 `REFERENCE`
 
 The full official catalog mapped to these modules, plus suggested learning paths.
@@ -359,8 +335,7 @@ The full official catalog mapped to these modules, plus suggested learning paths
 
 Applying all of the above to a Salesforce DX codebase in VS Code - where the governor limits, mandatory tests and risky deployments make agentic discipline mandatory rather than optional.
 
-### [Claude Code for Salesforce in VS Code Ready](lessons/24-salesforce-claude-code.md)
-
+### [Claude Code for Salesforce in VS Code](lessons/24-salesforce-claude-code.md)
 `MODULE 24 · TRACK F`
 
 Extension pack, sf CLI, CLAUDE.md for Apex and LWC, and the permission rules that protect your org.
@@ -370,8 +345,7 @@ Extension pack, sf CLI, CLAUDE.md for Apex and LWC, and the permission rules tha
 - hook that blocks production deployments
 - the `sf org display` access-token trap
 
-### [Salesforce agents, teams & skills Ready](lessons/25-salesforce-agents-skills.md)
-
+### [Salesforce agents, teams & skills](lessons/25-salesforce-agents-skills.md)
 `MODULE 25 · TRACK F`
 
 Explore a legacy org, review Apex like an architect, ship a story with a team, standardise with skills.
