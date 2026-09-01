@@ -55,6 +55,8 @@ This course is written from that side of the line.
 | 21 | [The AI-native SDLC](lessons/21-ai-native-sdlc.html) | Live |
 | 22 | [Enterprise rollout: the five decisions](lessons/22-enterprise-rollout.html) | Live |
 | 23 | [Claude on Bedrock and Vertex AI](lessons/23-bedrock-vertex.html) | Live |
+| 24 | [Claude Code for Salesforce in VS Code](lessons/24-salesforce-claude-code.html) | Live |
+| 25 | [Salesforce sub-agents, agent teams and skills](lessons/25-salesforce-agents-skills.html) | Live |
 | - | [Claude Academy map](academy-map.html) - full official catalog mapped to these modules | Reference |
 
 Every module follows the same six blocks: **mental model → mechanics → build it → what breaks → cost & latency →
@@ -67,6 +69,7 @@ interview drill**.
 - **C - API & platform:** 01, 16, 17, 18, 19, 23
 - **D - MCP:** 10, 20
 - **E - Delivery & enterprise:** 21, 22, 12
+- **F - Salesforce:** 24, 25
 
 ---
 
