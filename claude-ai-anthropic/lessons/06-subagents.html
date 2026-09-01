@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 06 - Sub-agents: delegation with a clean context</title>
+<meta name="description" content="What sub-agents are, the built-in ones, creating your own with /agents, the .claude/agents file format, tool and model scoping, and when not to use them.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 06</span>
+    <h1>Sub-agents</h1>
+    <p>A sub-agent is a separate Claude instance with its own context window, its own tool set, and one job. It does
+       the noisy work and hands back a summary - so your main conversation stays clean.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 06</div>
+
+  <h2>1. The one idea</h2>
+  <p>Searching 400 files to answer one question can dump enormous output into your session. A sub-agent reads all of it
+     in <b>its own</b> context, then returns a 200-word answer. You pay for the search once and your main window never
+     sees the noise.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Delegation and what comes back",
+      "nodes": ["You", "Main agent", "Sub-agent (own context)", "Codebase"],
+      "route": [0, 1, 2, 3, 2, 1, 0],
+      "labels": ["task", "delegate with a prompt", "read 400 files", "raw output stays here", "summary only", "answer"],
+      "tip": "The sub-agent cannot see your conversation. It only gets the prompt you hand it - so that prompt must be self-contained."
+    }
+    </script>
+  </div>
+
+  <table>
+    <thead><tr><th></th><th>Main agent</th><th>Sub-agent</th></tr></thead>
+    <tbody>
+      <tr><td>Context</td><td>Your whole conversation</td><td>Fresh window, only its prompt</td></tr>
+      <tr><td>Sees your chat?</td><td>-</td><td><b>No</b></td></tr>
+      <tr><td>Returns</td><td>-</td><td>One final summary message</td></tr>
+      <tr><td>Tools</td><td>Everything allowed</td><td>Only what you grant it</td></tr>
+      <tr><td>Lifetime</td><td>The session</td><td>One task, then gone</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Built-in agents</h2>
+  <p>Some already exist and get used automatically:</p>
+  <ul>
+    <li><b>Explore</b> - searches and maps a codebase without polluting your context.</li>
+    <li><b>Plan</b> - what runs behind plan mode; produces a plan as an isolated instance.</li>
+    <li><b>General purpose</b> - multi-step tasks that need several tools.</li>
+    <li><b>Claude Code guide</b> - answers questions about Claude Code itself.</li>
+    <li><b>Status line setup</b> - configures your terminal status line.</li>
+  </ul>
+  <p>Run <code>/agents</code> to see the library, what is running, and to create new ones.</p>
+
+  <h2>3. Create one, the guided way</h2>
+  <p><code>/agents</code> then "create new agent" walks you through six decisions. Each one matters:</p>
+
+  <table>
+    <thead><tr><th>Decision</th><th>Options</th><th>How to choose</th></tr></thead>
+    <tbody>
+      <tr><td><b>Location</b></td><td>Project (<code>.claude/agents/</code>) or personal (<code>~/.claude/agents/</code>)</td><td>Project if the team benefits and you want it in git. Personal for your own habits.</td></tr>
+      <tr><td><b>Description</b></td><td>Free text, generated into a prompt</td><td>Be specific about <i>what</i> and <i>when</i>. This text is how the main agent decides to invoke it.</td></tr>
+      <tr><td><b>Tools</b></td><td>All / read-only / edit / execution / MCP</td><td><b>Read-only unless it genuinely must write.</b> A reviewer that can edit will "helpfully" rewrite your code.</td></tr>
+      <tr><td><b>Model</b></td><td>Deep / balanced / fast / inherit</td><td>Match the job. Bulk scanning on the fast tier, architectural judgement on the deep tier.</td></tr>
+      <tr><td><b>Memory scope</b></td><td>Project / user / local</td><td>Project so findings are shared and reviewable.</td></tr>
+      <tr><td><b>Colour</b></td><td>Cosmetic</td><td>Genuinely useful once three agents are running at once.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <b>Do not guess which agents you need</b>
+    Ask in the repo: <i>"based on this project, which sub-agents would give the most value, and why?"</i> The answer is
+    grounded in your actual structure - test coverage gaps, review bottlenecks, docs that go stale - instead of a
+    generic list.
+  </div>
+
+  <h2>4. The file format</h2>
+  <p>An agent is just a markdown file with frontmatter. You can write it by hand or edit what the wizard generated:</p>
+
+<pre><code>&lt;!-- .claude/agents/code-improvement-advisor.md --&gt;
+---
+name: code-improvement-advisor
+description: Use when the user asks for a code review, refactoring suggestions,
+  readability or performance improvements. Reports findings; never edits files.
+tools: Read, Glob, Grep
+model: sonnet
+---
+
+You are a senior code improvement advisor.
+
+## Scope
+Analyse only files inside this repository. Never modify anything.
+
+## Method
+1. Map the structure before judging any single file.
+2. For each finding report: file and line, severity (high/medium/low),
+   the current code, why it is a problem, and an improved version.
+3. Prefer three high-value findings over twenty trivial ones.
+
+## Output
+Group by severity, worst first. If nothing is wrong, say so - do not invent work.
+
+## Never
+- Do not comment on formatting handled by the linter.
+- Do not suggest rewrites of generated code.</code></pre>
+
+  <div class="warn">
+    <b>The description field is the router</b>
+    The main agent picks a sub-agent by reading its description. "Reviews code" competes with everything. "Use when the
+    user asks for readability, performance or best-practice review of existing files; read-only" gets invoked at the
+    right time and only then.
+  </div>
+
+  <h2>5. Running it</h2>
+
+<pre><code>&gt; review the whole project and give me improvement suggestions
+# main agent matches the description and delegates automatically
+
+&gt; use the code-improvement-advisor on app/services/
+# or invoke it explicitly</code></pre>
+
+  <p>Findings come back as a single summary. Because the agent is read-only, nothing changed - you decide what to
+     action. That separation of <b>advice</b> from <b>edits</b> is the pattern worth internalising.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "Review-then-fix, safely",
+      "steps": ["Read-only reviewer finds issues", "You pick which ones matter", "Main agent implements just those", "Tests verify", "You review the diff"],
+      "fail": {
+        "at": 0,
+        "label": "Reviewer had write access",
+        "then": ["It 'helpfully' refactors 30 files", "Diff is unreviewable", "Real bugs hide in the noise", "Revert everything"]
+      },
+      "tip": "Separating who finds problems from who fixes them keeps every diff small enough to actually review."
+    }
+    </script>
+  </div>
+
+  <h2>6. When NOT to use a sub-agent</h2>
+  <table>
+    <thead><tr><th>Situation</th><th>Do this instead</th></tr></thead>
+    <tbody>
+      <tr><td>You know the file path</td><td>Just read it. Spawning an agent is pure overhead.</td></tr>
+      <tr><td>One-line lookup</td><td>Grep it.</td></tr>
+      <tr><td>Task needs your conversation history</td><td>Keep it in the main agent - the sub-agent cannot see the chat.</td></tr>
+      <tr><td>Sub-agents need to talk to each other</td><td>That is agent teams (module 08). Sub-agents cannot coordinate.</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Extra points</h4>
+  <ul>
+    <li><b>Parallelism.</b> Several sub-agents can run concurrently - great for "review these four modules", terrible
+        for your token budget if you do it thoughtlessly.</li>
+    <li><b>Self-contained prompts.</b> No chat history means the delegating prompt must carry every constraint.</li>
+    <li><b>Version them in git.</b> A well-tuned agent file is team IP; review changes to it like code.</li>
+    <li><b>Start from the pain.</b> The agents worth building are the reviews you keep doing manually.</li>
+    <li><b>They cost real tokens.</b> Each one has its own window and its own system prompt. Delegate to save context,
+        not to look sophisticated.</li>
+  </ul>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Run <code>/agents</code> and read the built-in list.</li>
+      <li>Ask the repo which sub-agents it would benefit from.</li>
+      <li>Create a read-only <b>code improvement advisor</b> at project scope with only Read, Glob and Grep.</li>
+      <li>Open <code>.claude/agents/</code> and read the generated file. Tighten the description and delete filler from the prompt.</li>
+      <li>Run it on a real directory, then check <code>/context</code> - confirm your main window stayed small.</li>
+      <li>Build a second one: a <b>test-gap finder</b> that lists untested public functions, worst first.</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Ship three project-scoped sub-agents to your repo: a read-only reviewer, a test-gap finder, and a documentation
+    checker that flags stale docs against current code. Commit them, then have a teammate run one without any
+    explanation from you. If they get useful output first try, your description and prompt are good.
+  </div>
+
+  <h2>7. Interview drill</h2>
+
+  <details class="q"><summary>Why does a sub-agent save context if it uses the same model?</summary>
+    <p>Because the raw output stays in the sub-agent's window. Your main window receives only the final summary, so a
+       search over hundreds of files costs you a paragraph instead of thousands of tokens.</p>
+  </details>
+
+  <details class="q"><summary>Why give a reviewer read-only tools?</summary>
+    <p>To separate analysis from mutation. A reviewer that can write turns a review into an unreviewable refactor, and
+       you lose the ability to choose which findings to act on. It also bounds the blast radius if the prompt is
+       manipulated.</p>
+  </details>
+
+  <details class="q"><summary>A sub-agent produced an answer that ignored something discussed earlier in the chat. Why?</summary>
+    <p>It never saw the chat. Sub-agents only receive the prompt handed to them, so any constraint from earlier in the
+       conversation must be restated in the delegation.</p>
+  </details>
+
+  <details class="q"><summary>When is a sub-agent the wrong tool?</summary>
+    <p>Single-file lookups where you already know the path, tasks that depend on conversation history, and anything
+       requiring two workers to coordinate mid-task - that last one needs agent teams.</p>
+  </details>
+
+  <div class="pager">
+    <a href="05-modes-permissions-tools.html">&larr; Module 05</a>
+    <a href="07-agent-views.html">Module 07: Agent views &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

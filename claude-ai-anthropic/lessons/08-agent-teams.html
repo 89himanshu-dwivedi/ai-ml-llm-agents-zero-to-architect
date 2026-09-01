@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 08 - Agent teams: collaborating agents with a shared task list</title>
+<meta name="description" content="Experimental agent teams - lead plus named teammates, a shared task list, peer messaging, and how the collaborative structure differs from fire-and-forget sub-agents.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 08 &middot; Experimental</span>
+    <h1>Agent teams</h1>
+    <p>Sub-agents are fire and forget: spawn, run once, return, vanish. Agent teams are persistent teammates that stay
+       alive across turns, share a task list, and message each other mid-task.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 08</div>
+
+  <h2>1. Two shapes of parallel work</h2>
+
+  <table>
+    <thead><tr><th></th><th>Sub-agents (hierarchy)</th><th>Agent teams (collaboration)</th></tr></thead>
+    <tbody>
+      <tr><td>Structure</td><td>Lead delegates down, results merge back</td><td>Lead plus named teammates working a shared list</td></tr>
+      <tr><td>Lifetime</td><td>One task, then gone</td><td>Persist across multiple turns</td></tr>
+      <tr><td>Context</td><td>Own window, isolated</td><td>Own window plus shared task state</td></tr>
+      <tr><td>Communication</td><td>Only with the lead</td><td>Teammate to teammate, directly</td></tr>
+      <tr><td>Coordination</td><td>None - they cannot see each other</td><td>Claim tasks, signal blockers, hand off</td></tr>
+      <tr><td>Best for</td><td>Focused, independent tasks</td><td>Complex work with dependencies between parts</td></tr>
+      <tr><td>Token cost</td><td>Higher than one agent</td><td><b>Highest</b> - coordination messages are tokens too</td></tr>
+    </tbody>
+  </table>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Collaborative structure",
+      "nodes": ["You", "Lead agent", "Shared task list", "Teammate A", "Teammate B"],
+      "route": [0, 1, 2, 3, 2, 4, 3, 4, 1, 0],
+      "labels": ["goal", "create tasks", "claim task", "update status", "claim next", "A messages B", "B replies", "report", "consolidated result"],
+      "tip": "The shared task list is the coordination substrate. Without it two agents duplicate work; with it they can see what is claimed, what is blocked and what is done."
+    }
+    </script>
+  </div>
+
+  <h2>2. Turn it on</h2>
+  <p>Agent teams are experimental and gated behind a flag in your settings:</p>
+
+<pre><code>// .claude/settings.json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}</code></pre>
+
+  <div class="warn">
+    <b>Experimental means experimental</b>
+    The flag name, the tools and the behaviour can change between releases. Do not build a team workflow into a
+    production pipeline yet - use it for exploratory work and verify the current flag in the docs before you assume
+    anything here still holds.
+  </div>
+
+  <h2>3. The primitives</h2>
+  <table>
+    <thead><tr><th>Capability</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>Create team</td><td>Establishes the team and the shared workspace.</td></tr>
+      <tr><td>Spawn teammate (named)</td><td>Adds a persistent agent with a role - "middleware reviewer", "docs writer".</td></tr>
+      <tr><td>Create task</td><td>Adds an item to the shared list, visible to everyone.</td></tr>
+      <tr><td>Update task</td><td>Claim, mark in progress, blocked, or complete.</td></tr>
+      <tr><td>Send message</td><td>Direct teammate-to-teammate communication mid-task.</td></tr>
+      <tr><td>Shut down</td><td>Ends the team cleanly once tasks are complete.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. A real run</h2>
+
+<pre><code>&gt; Create a small team to review two notebooks in parallel: one teammate on the
+  middleware notebook, one on the RAG notebook. Use the shared task list, and
+  report consolidated findings back to me when both are done.</code></pre>
+
+  <p>The lead creates the team, spawns two named teammates, populates the task list, and each teammate claims its task.
+     They mark progress on the shared list and message the lead - or each other - when they hit a dependency. When both
+     are complete the lead consolidates and shuts the team down.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "Writer and reviewer, with a real dependency",
+      "steps": ["Lead creates team", "Task 1: write section (writer)", "Task 2: review section (reviewer) - blocked", "Writer completes task 1", "Writer messages reviewer", "Reviewer wakes, reviews, completes"],
+      "fail": {
+        "at": 2,
+        "label": "Reviewer starts before the section exists",
+        "then": ["Reviews an empty file", "Reports nothing useful", "Marks the task done anyway", "Fix: mark task 2 blocked by task 1"]
+      },
+      "tip": "Dependencies must be explicit in the task list. Idle-until-unblocked is correct behaviour; a teammate that reviews nothing and declares success is the failure you actually need to catch."
+    }
+    </script>
+  </div>
+
+  <h2>5. When a team is worth it</h2>
+
+  <table>
+    <thead><tr><th>Use a team</th><th>Use sub-agents instead</th></tr></thead>
+    <tbody>
+      <tr><td>Work with real dependencies between parts</td><td>Fully independent tasks</td></tr>
+      <tr><td>Producer / reviewer, or writer / verifier pairs</td><td>One-shot analysis or search</td></tr>
+      <tr><td>Long tasks where roles persist over many turns</td><td>Anything that finishes in one call</td></tr>
+      <tr><td>You want visibility into who is doing what</td><td>You only care about the final answer</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <b>Honest guidance</b>
+    Most problems do not need a team. Reach for a single agent first, then sub-agents, then a team - and only when
+    coordination is the actual bottleneck. Each step up multiplies cost and adds a new failure mode: agents talking to
+    each other about work instead of doing it.
+  </div>
+
+  <h4>Extra points</h4>
+  <ul>
+    <li><b>Cost grows super-linearly.</b> Every coordination message is input tokens for the receiver. Budget before you
+        run a five-teammate team.</li>
+    <li><b>Give roles, not tasks.</b> "You own test coverage for the API layer" produces better teammates than "run
+        pytest".</li>
+    <li><b>Define done per task.</b> Ambiguity that one agent would ask you about becomes an assumption a teammate acts
+        on.</li>
+    <li><b>Watch for consensus drift.</b> Agents can agree with each other and be wrong together. A reviewer needs
+        explicit instructions to disagree.</li>
+    <li><b>Always shut the team down.</b> Idle teammates are idle spend.</li>
+    <li><b>Keep humans on the merge.</b> A consolidated report authored by the same system that did the work is not an
+        independent review.</li>
+  </ul>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Enable the experimental flag in <code>.claude/settings.json</code>.</li>
+      <li>Ask a session to explain agent teams in your repo, then to demo one with two teammates.</li>
+      <li>Run a writer + reviewer team to add a documentation section, with the review task blocked by the write task.</li>
+      <li>Watch the reviewer stay idle until unblocked - that is correct behaviour, not a bug.</li>
+      <li>Compare the token usage against doing the same job with two sub-agents.</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Take one genuinely dependent workflow - for example "migrate a module, then update its tests, then update the
+    docs" - and implement it twice: once as sequential single-agent work, once as a team. Record wall-clock time,
+    token spend, and quality of the result. Write a short recommendation on when your team should reach for a team.
+    Being able to say "we measured it" is what separates an architect from an enthusiast.
+  </div>
+
+  <h2>6. Interview drill</h2>
+
+  <details class="q"><summary>Sub-agents versus agent teams in one sentence each.</summary>
+    <p>Sub-agents: isolated, fire-and-forget workers that return a summary to the lead. Agent teams: persistent
+       teammates that share a task list and can message each other, for work where the parts depend on each other.</p>
+  </details>
+
+  <details class="q"><summary>Why do teams cost more than the sum of their work?</summary>
+    <p>Coordination is not free. Every message one teammate sends is input tokens for another, plus each teammate
+       carries its own system prompt and context. You pay for the conversation as well as the work.</p>
+  </details>
+
+  <details class="q"><summary>What is the characteristic failure mode of a multi-agent setup?</summary>
+    <p>Agents agreeing with each other and progressing confidently in the wrong direction, plus tasks marked complete
+       that were never really done. Mitigate with explicit definitions of done, a reviewer instructed to disagree, and
+       a human at the merge point.</p>
+  </details>
+
+  <details class="q"><summary>Would you put an agent team in a production pipeline today?</summary>
+    <p>No - it is experimental, the interface can change, and cost is hard to bound. Use it for exploratory and
+       internal work; for production automation prefer a deterministic pipeline that calls single agents at defined
+       steps.</p>
+  </details>
+
+  <div class="pager">
+    <a href="07-agent-views.html">&larr; Module 07</a>
+    <a href="09-skills.html">Module 09: Skills &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar. Experimental feature - verify flags and tool names against current docs.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

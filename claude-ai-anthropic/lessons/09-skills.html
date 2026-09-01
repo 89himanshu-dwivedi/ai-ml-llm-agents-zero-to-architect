@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 09 - Skills: packaging a repeatable workflow</title>
+<meta name="description" content="SKILL.md anatomy, progressive disclosure, where skills live, invoking them, skills that call plugins, and how skills differ from sub-agents and slash commands.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 09</span>
+    <h1>Skills</h1>
+    <p>A skill is a reusable, versioned folder of instructions, resources and examples that teaches Claude how to do a
+       specific kind of task - loaded only when that task actually comes up.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 09</div>
+
+  <h2>1. What a skill is for</h2>
+  <p>You have a workflow you repeat: research a topic and produce a structured brief; audit a component against your
+     design system; turn a bug report into a reproducible test. Every time, you explain the steps again.</p>
+  <p>Put those steps in a file once. Claude reads the skill's short description all the time, and loads the full
+     instructions only when a request matches. That is <b>progressive disclosure</b> - and it is why skills scale where
+     a giant system prompt does not.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "How a skill gets used",
+      "steps": ["You describe a task", "Claude scans skill descriptions", "Best match loads its full instructions", "Steps execute, using tools or plugins", "Result in your agreed format"],
+      "fail": {
+        "at": 1,
+        "label": "No skill matches (vague description)",
+        "then": ["Claude improvises", "Output format drifts", "Rewrite the description with trigger words", "Skill fires correctly next time"]
+      },
+      "tip": "The description field is the whole routing mechanism. A brilliant skill with a vague description will never run."
+    }
+    </script>
+  </div>
+
+  <h2>2. Where skills live</h2>
+  <table>
+    <thead><tr><th>Path</th><th>Scope</th><th>Commit?</th></tr></thead>
+    <tbody>
+      <tr><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td><td>This project, whole team</td><td>Yes</td></tr>
+      <tr><td><code>~/.claude/skills/&lt;name&gt;/SKILL.md</code></td><td>Every project on your machine</td><td>n/a</td></tr>
+      <tr><td>Bundled inside a plugin</td><td>Anyone who installs the plugin</td><td>Ships with the plugin (module 10)</td></tr>
+    </tbody>
+  </table>
+
+  <p>A skill is a <b>folder</b>, not just a file - which means it can carry templates, scripts, examples and reference
+     documents next to its instructions.</p>
+
+  <h2>3. Create one</h2>
+  <p>Fastest route is to ask for it in plain language:</p>
+
+<pre><code>&gt; Create a skill called research-topic. It should research a topic and return a
+  structured brief. It should use web search, and the Exa plugin when available.
+  Write SKILL.md into this project so the team gets it.</code></pre>
+
+  <p>Then open the generated file and tighten it. Anatomy:</p>
+
+<pre><code>&lt;!-- .claude/skills/research-topic/SKILL.md --&gt;
+---
+name: research-topic
+description: Research a technical topic and return a structured brief with
+  key points, trade-offs and cited sources. Use when the user asks to research,
+  investigate, compare or summarise a topic or technology.
+allowed-tools: WebSearch, WebFetch, Read, Write
+---
+
+# Research topic
+
+## Input
+A topic string. If it is ambiguous, ask exactly one clarifying question first.
+
+## Steps
+1. Search for primary sources - official docs and specs before blog posts.
+2. If the Exa plugin is available, use it for deep search; otherwise use web search.
+3. Cross-check any claim that appears in only one source.
+4. Note publication dates. Flag anything older than 12 months as possibly stale.
+
+## Output format
+- **Topic** - one-line definition
+- **Why it exists** - the problem it solves
+- **Key points** - 5 to 8 bullets
+- **Trade-offs** - what it costs you
+- **When not to use it**
+- **Sources** - title + URL + date
+
+## Rules
+- Never state a version number or price without a source.
+- If sources conflict, show both and say so. Do not average them.</code></pre>
+
+  <div class="tip">
+    <b>Write the description for the router, the body for the worker</b>
+    Description: what the task is and the words a user would actually say ("research", "investigate", "compare").
+    Body: the steps, the output contract, and the rules. Two different audiences, two different styles.
+  </div>
+
+  <h2>4. Invoke it</h2>
+
+<pre><code>/research-topic what are LLM gateways
+
+# or just describe the task and let the description route it:
+&gt; research LLM gateways for me</code></pre>
+
+  <p>Output arrives in the format the skill defined - every time, by every person on the team. That consistency is the
+     real product. Anyone can get an answer; a skill makes the answer <i>the same shape</i> for everyone.</p>
+
+  <h2>5. Skill versus sub-agent versus slash command</h2>
+
+  <table>
+    <thead><tr><th></th><th>Slash command</th><th>Skill</th><th>Sub-agent</th></tr></thead>
+    <tbody>
+      <tr><td>Is</td><td>A saved prompt</td><td>A packaged workflow with resources</td><td>A separate instance with its own context</td></tr>
+      <tr><td>Triggered by</td><td>You typing <code>/name</code></td><td>You, or automatically by description match</td><td>Delegation from the main agent</td></tr>
+      <tr><td>Own context?</td><td>No</td><td>No - runs in the current session</td><td><b>Yes</b></td></tr>
+      <tr><td>Carries files?</td><td>No</td><td><b>Yes</b> - templates, scripts, examples</td><td>No</td></tr>
+      <tr><td>Pick it when</td><td>You repeat a prompt</td><td>You repeat a multi-step procedure</td><td>You need isolation or parallelism</td></tr>
+    </tbody>
+  </table>
+
+  <p>They compose: a slash command can invoke a skill, and a skill's steps can be delegated to a sub-agent.</p>
+
+  <h2>6. Skills that use plugins</h2>
+  <p>A skill is a workflow; a plugin brings capability. Combine them and a skill stops being limited to what the model
+     already knows.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Skill calling a plugin",
+      "nodes": ["Your request", "Skill workflow", "Plugin (search / docs)", "External service", "Formatted output"],
+      "route": [0, 1, 2, 3, 2, 1, 4],
+      "labels": ["/research-topic X", "step 2 needs search", "query", "results", "structured per skill rules", "brief"],
+      "tip": "Skill = the procedure and the output contract. Plugin = the capability. Keep them separate so you can swap the search provider without rewriting the workflow."
+    }
+    </script>
+  </div>
+
+  <div class="warn">
+    <b>Always write a fallback</b>
+    A plugin can be missing, unauthenticated or rate limited. If your skill says "use Exa" with no alternative, it
+    fails outright the first time the key expires. Write it as: prefer Exa, fall back to web search, and say in the
+    output which one was used.
+  </div>
+
+  <h4>Extra points</h4>
+  <ul>
+    <li><b>Keep SKILL.md short.</b> Push detail into referenced files in the same folder; that is what progressive
+        disclosure is for.</li>
+    <li><b>Version them in git</b> and review changes - a skill silently altering its output format breaks everyone
+        downstream.</li>
+    <li><b>Scope tools per skill.</b> A formatting skill does not need shell access.</li>
+    <li><b>Skills are cross-surface.</b> The same packaging idea shows up in the apps and in Cowork, not just in
+        Claude Code.</li>
+    <li><b>Test a skill like code:</b> run it on three inputs including an ambiguous one, and check it asks rather than
+        assumes.</li>
+    <li><b>Name for the task, not the tech.</b> <code>research-topic</code> ages better than <code>exa-search</code>.</li>
+  </ul>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Build the <code>research-topic</code> skill at project scope and run it on a real question.</li>
+      <li>Open the generated SKILL.md, tighten the description with trigger words, and add an explicit output contract.</li>
+      <li>Build a second skill: <code>open-source-docs</code> that fetches current library documentation and returns working example code.</li>
+      <li>Test routing: describe a task in natural language without the slash command and confirm the right skill fires.</li>
+      <li>Break it on purpose - remove the plugin - and confirm your fallback path works.</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Package the workflow you personally repeat most often as a skill: a PR review checklist, an incident write-up
+    template, a data-quality audit, whatever it is. It must include an output contract and a rule for ambiguous input.
+    Commit it, then get a teammate to use it with no explanation. If their output looks like yours, the skill works.
+  </div>
+
+  <h2>7. Interview drill</h2>
+
+  <details class="q"><summary>Why is a skill better than putting the same instructions in the system prompt?</summary>
+    <p>Progressive disclosure. Only the short description is always in context; the full instructions load when
+       relevant. That lets you have fifty skills without paying for fifty sets of instructions on every request - and
+       it keeps unrelated guidance from biasing other tasks.</p>
+  </details>
+
+  <details class="q"><summary>Your skill never triggers automatically. Fix it.</summary>
+    <p>The description is the router. Rewrite it to state the task plus the phrases a user would actually use, keep it
+       distinct from other skills, and test by describing the task naturally rather than invoking it by name.</p>
+  </details>
+
+  <details class="q"><summary>Skill or sub-agent?</summary>
+    <p>Skill when you need a repeatable procedure and a consistent output format in the current conversation.
+       Sub-agent when you need context isolation, a restricted tool set, or parallel execution. They compose - a skill
+       can delegate a heavy step to a sub-agent.</p>
+  </details>
+
+  <details class="q"><summary>How do you keep a library of skills from rotting?</summary>
+    <p>Treat them as code: version control, review, an owner per skill, and a periodic run against known inputs to
+       verify the output contract still holds. Delete skills nobody invokes - dead skills still cost description
+       tokens and confuse routing.</p>
+  </details>
+
+  <div class="pager">
+    <a href="08-agent-teams.html">&larr; Module 08</a>
+    <a href="10-plugins-mcp.html">Module 10: Plugins &amp; MCP &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

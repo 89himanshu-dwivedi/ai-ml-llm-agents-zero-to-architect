@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 21 - The AI-native SDLC</title>
+<meta name="description" content="When agents write most of the code, planning, review, testing and deployment become the bottleneck. intent.md, machine-readable knowledge, layered review, continuous evals and hooks as governance gates.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 21 &middot; Track E</span>
+    <h1>The AI-native SDLC</h1>
+    <p>Code generation got ten times faster. Planning, review, testing and deployment did not. This module is about the
+       processes around the code - which is where the gains are now won or lost.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 21</div>
+
+  <h2>1. The new bottleneck</h2>
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "Where the queue moved",
+      "steps": ["Idea", "Spec", "Code (now fast)", "Review (human speed)", "Test + deploy (human gates)"],
+      "fail": {
+        "at": 3,
+        "label": "Review queue builds",
+        "then": ["PRs pile up", "Reviewers skim to keep up", "Under-reviewed code ships", "Or: throughput gains evaporate"]
+      },
+      "tip": "Adding agents without changing review is how a team gets faster at producing work nobody has capacity to check. The unreviewed backlog is the risk, not the model."
+    }
+    </script>
+  </div>
+
+  <h2>2. Capture intent before code</h2>
+  <p>The practice that pays off first: a short, version-controlled <code>intent.md</code> stating what is wanted, why,
+     and under which constraints - written before anything is generated.</p>
+
+<pre><code># intent.md - Bulk invoice export
+
+## What
+Let finance export filtered invoices to XLSX from the admin UI.
+
+## Why
+Manual CSV wrangling costs ~6 hours per month-end close.
+
+## Constraints
+- Must respect existing row-level permissions - no widening of access.
+- Max 50k rows per export; larger requests must be queued, not blocked.
+- No new third-party dependency without architecture review.
+
+## Definition of done
+- Endpoint + UI behind the `bulk_export` feature flag
+- Tests for permissions, row cap, and queueing
+- Runbook entry for the queue worker
+
+## Explicitly out of scope
+Scheduled/recurring exports. Separate intent.</code></pre>
+
+  <p>From that file, one working session with Claude produces a requirements and design spec. Because the intent is
+     versioned, you can later diff what was asked against what was built - which is exactly what an auditor wants.</p>
+
+  <div class="tip">
+    <b>Why this beats a ticket</b>
+    A ticket describes a task. <code>intent.md</code> describes the boundary conditions an agent must not cross, in a
+    machine-readable file that lives next to the code and gets reviewed like code.
+  </div>
+
+  <h2>3. Institutional knowledge as versioned files</h2>
+  <table>
+    <thead><tr><th>Artifact</th><th>Holds</th><th>Reviewed like</th></tr></thead>
+    <tbody>
+      <tr><td><code>CLAUDE.md</code></td><td>Architecture, commands, conventions, landmines</td><td>Code - changes go through PR</td></tr>
+      <tr><td>Skills</td><td>Repeatable procedures with output contracts</td><td>Code - with an owner per skill</td></tr>
+      <tr><td>Sub-agent definitions</td><td>Specialised roles and their tool scopes</td><td>Code - permission changes need scrutiny</td></tr>
+      <tr><td><code>intent.md</code> history</td><td>Why the system is shaped this way</td><td>Design record</td></tr>
+    </tbody>
+  </table>
+  <p>The point: knowledge that used to live in senior engineers' heads becomes files that both humans and agents read.
+     Onboarding, consistency and agent quality all improve from the same artifact.</p>
+
+  <h2>4. Layered review</h2>
+  <p>You cannot review ten times the code with the same process. Layer it so human attention lands where it matters:</p>
+  <table>
+    <thead><tr><th>Layer</th><th>Catches</th><th>Runs</th></tr></thead>
+    <tbody>
+      <tr><td><b>Deterministic</b></td><td>Format, lint, types, tests, dependency policy</td><td>Hooks and CI, always</td></tr>
+      <tr><td><b>Agentic review</b></td><td>Logic issues, missing tests, convention drift, security smells</td><td>Automatically on every PR</td></tr>
+      <tr><td><b>Human review</b></td><td>Intent, architecture, risk, regulated and critical paths</td><td>Reserved - not spent on style</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <b>Human review must be reserved, not removed</b>
+    In regulated and safety-critical code the human layer is mandatory. What changes is what humans spend it on: never
+    formatting, always intent and risk. If your reviewers are still commenting on naming, the lower layers are not
+    doing their job.
+  </div>
+
+  <h2>5. Continuous evals woven through implementation</h2>
+  <ul>
+    <li>Evals run in CI like tests, not as a one-off before launch.</li>
+    <li>Every production failure becomes a permanent eval case.</li>
+    <li>Prompts, skills and agent definitions are versioned so a score change is attributable.</li>
+    <li>Track quality, cost per completed task and review time as one dashboard - optimising any one alone distorts
+        the others.</li>
+  </ul>
+
+  <h2>6. Governance enforced as the AI acts</h2>
+  <p>Policy written in a wiki is a hope. Policy written as a hook is a gate.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Governance in the loop",
+      "nodes": ["Agent action", "Hook gate", "CI checks", "Merge", "Control band breach"],
+      "route": [0, 1, 2, 3, 4, 0],
+      "labels": ["intends to write", "allow / block", "tests + policy", "reviewed PR", "write back as new intent.md"],
+      "tip": "Close the loop: when a control band is breached - too many escaped defects, cost per task too high, review time climbing - that becomes a new intent.md and the process changes. Governance is a feedback system, not a document."
+    }
+    </script>
+  </div>
+
+  <table>
+    <thead><tr><th>Control</th><th>Implemented as</th></tr></thead>
+    <tbody>
+      <tr><td>Protected paths</td><td>PreToolUse hook blocking writes</td></tr>
+      <tr><td>Style and lint</td><td>PostToolUse hook, automatic</td></tr>
+      <tr><td>Tests before "done"</td><td>Stop hook gating turn completion on a real test run</td></tr>
+      <tr><td>Dependency policy</td><td>CI check plus a deny rule on install commands</td></tr>
+      <tr><td>Audit</td><td>SessionEnd hook writing a record: who, what, which files, which model</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. Metrics that tell the truth</h2>
+  <table>
+    <thead><tr><th>Measure</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Lead time from intent to production</td><td>The end-to-end number; the only one leadership should care about</td></tr>
+      <tr><td>Review queue depth and age</td><td>Early warning that generation outpaced verification</td></tr>
+      <tr><td>Escaped defect rate</td><td>Whether speed is costing quality</td></tr>
+      <tr><td>Percentage of PRs passing agentic review unchanged</td><td>Whether your CLAUDE.md and skills are actually working</td></tr>
+      <tr><td>Cost per completed task</td><td>The unit economics of the whole change</td></tr>
+    </tbody>
+  </table>
+  <p>Note what is missing: lines of code and number of PRs. Those go up automatically and mean nothing.</p>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Write <code>intent.md</code> for your next real piece of work before writing any code.</li>
+      <li>Generate the design spec from it in one session, then review the spec instead of the code.</li>
+      <li>Add an agentic review step to your PR pipeline, capped at the top five findings.</li>
+      <li>Add a Stop hook that refuses completion unless the test suite passed.</li>
+      <li>Measure review queue depth for two weeks before and after.</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Take one team's workflow and produce an AI-native SDLC proposal: where intent is captured, which knowledge files
+    exist and who owns them, the three review layers and what each catches, the hooks that enforce non-negotiables,
+    the eval strategy, and the five metrics with current baselines. Present it as a change to the process, not a
+    request for tooling - that distinction is what gets it approved.
+  </div>
+
+  <h2>8. Interview drill</h2>
+
+  <details class="q"><summary>Agents made your team 3x faster at writing code. What breaks first?</summary>
+    <p>Review. Everything downstream still runs at human speed, so the queue grows and reviewers start skimming. The
+       fix is layered review - deterministic checks and agentic review first, human attention reserved for intent,
+       architecture and risk.</p>
+  </details>
+
+  <details class="q"><summary>Why capture intent as a file rather than a ticket?</summary>
+    <p>It is versioned, machine-readable, reviewable, and lives beside the code. Agents read it as constraints, humans
+       review it as a design record, and later you can diff what was intended against what shipped.</p>
+  </details>
+
+  <details class="q"><summary>How do you enforce policy on an agent in a regulated environment?</summary>
+    <p>Mechanically. Hooks as approval gates, CI as a hard check, protected paths, deny rules, and an audit record per
+       session. Instructions are guidance; hooks and pipelines are controls - and only controls survive an audit.</p>
+  </details>
+
+  <details class="q"><summary>Which metrics prove the transformation worked?</summary>
+    <p>Lead time from intent to production, escaped defect rate, review queue age, and cost per completed task. Volume
+       metrics like PR count or lines of code rise automatically and prove nothing.</p>
+  </details>
+
+  <div class="pager">
+    <a href="20-mcp-advanced.html">&larr; Module 20</a>
+    <a href="22-enterprise-rollout.html">Module 22: Enterprise rollout &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar. Structure follows Anthropic's AI-Native SDLC Playbook.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

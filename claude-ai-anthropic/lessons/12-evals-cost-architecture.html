@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 12 - Evals, cost, safety and architecture case studies</title>
+<meta name="description" content="Golden sets, LLM-as-judge, caching, cost and latency budgets, safety controls, three full architecture case studies and a staff-level interview bank.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 12 &middot; Capstone</span>
+    <h1>Evals, cost, safety &amp; architecture</h1>
+    <p>The module that decides whether anything you built in modules 01 to 11 is allowed near production - and the
+       interview bank that proves you can defend it.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 12</div>
+
+  <h2>1. Evaluation: no demo without a test</h2>
+  <p>Prompts, skills and agent configurations are code with no compiler. The only way to know a change helped is to
+     measure it against fixed cases.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "The eval loop",
+      "steps": ["Collect 30-50 real cases", "Define pass criteria per case", "Run the current version -> baseline", "Change one thing", "Re-run and compare"],
+      "fail": {
+        "at": 3,
+        "label": "Changed three things at once",
+        "then": ["Score moves - cause unknown", "Cannot revert the bad part", "Revert all, change one variable", "Re-measure"]
+      },
+      "tip": "A 'vibes' regression test is the same as no regression test. Thirty real cases with explicit pass criteria beats a thousand synthetic ones."
+    }
+    </script>
+  </div>
+
+  <table>
+    <thead><tr><th>Method</th><th>Good for</th><th>Watch out</th></tr></thead>
+    <tbody>
+      <tr><td><b>Exact / rule check</b></td><td>Extraction, classification, JSON shape, required fields</td><td>Only works when there is one right answer</td></tr>
+      <tr><td><b>Golden set + human review</b></td><td>Anything subjective, small volumes</td><td>Expensive; keep the set small and real</td></tr>
+      <tr><td><b>LLM as judge</b></td><td>Scaling subjective scoring</td><td>Judges are biased toward verbosity and their own style. Calibrate against human labels before trusting it.</td></tr>
+      <tr><td><b>Task success rate</b></td><td>Agents - did the test suite go green?</td><td>The most honest agent metric there is: measure the outcome, not the prose</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <b>Build the eval set from failures</b>
+    Every time the agent gets something wrong, that case becomes a permanent test. After a month your eval set is an
+    exact map of your system's weak points - and it is impossible to reintroduce an old bug quietly.
+  </div>
+
+  <h2>2. Cost and latency</h2>
+
+  <table>
+    <thead><tr><th>Lever</th><th>Typical effect</th><th>Cost of using it</th></tr></thead>
+    <tbody>
+      <tr><td>Route by difficulty (fast tier first)</td><td>Largest single saving</td><td>Needs the router evaluated too</td></tr>
+      <tr><td>Prompt caching on a stable prefix</td><td>Cheap re-reads of long context</td><td>Cache writes cost more; prefix must be byte-identical and reused within the TTL</td></tr>
+      <tr><td>Batch processing</td><td>Roughly half price</td><td>Not interactive</td></tr>
+      <tr><td>Trim / summarise history</td><td>Stops quadratic growth</td><td>Lossy - persist decisions to files</td></tr>
+      <tr><td>Semantic cache on repeat questions</td><td>Repeats become free</td><td>Staleness and near-miss matches</td></tr>
+      <tr><td>Shorter output contracts</td><td>Output tokens cost multiples of input</td><td>None. Do this first.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <b>Agent cost is not chat cost</b>
+    One agent turn can be dozens of model calls - read, plan, edit, test, re-read. Budget per <i>task completed</i>,
+    not per message, and put a hard cap on steps, tokens and wall-clock time in any autonomous loop. An agent without
+    a budget is an open-ended invoice.
+  </div>
+
+  <h2>3. Safety checklist before production</h2>
+  <ul>
+    <li><b>Least privilege</b> - allow / ask / deny rules per project; no credentials the task does not need.</li>
+    <li><b>Untrusted text is data</b> - delimited, never treated as instructions. Applies to issues, web pages, tool
+        output and dependency files.</li>
+    <li><b>Deterministic gates</b> - hooks and CI checks for anything that must always hold.</li>
+    <li><b>Human on irreversible actions</b> - deploys, deletes, payments, external communication.</li>
+    <li><b>Full audit trail</b> - prompt version, model, tools called, tokens, latency, outcome.</li>
+    <li><b>Kill switch</b> - one flag that stops all autonomous runs, tested before you need it.</li>
+    <li><b>Data boundaries</b> - know what leaves your network and redact what does not need to.</li>
+  </ul>
+
+  <h2>4. Case study A - the onboarding assistant</h2>
+  <p><b>Problem:</b> new joiners burn two weeks and a lot of senior time getting oriented.</p>
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Onboarding assistant",
+      "nodes": ["New joiner", "Claude Code", "CLAUDE.md + docs", "Repo", "Explore sub-agent"],
+      "route": [0, 1, 2, 1, 4, 3, 4, 1, 0],
+      "labels": ["question", "load memory", "conventions", "delegate search", "read wide", "findings", "grounded answer", "walkthrough"],
+      "tip": "The valuable artifact is not the chat - it is the CLAUDE.md the team maintains. The assistant is just the interface to it."
+    }
+    </script>
+  </div>
+  <p><b>Design:</b> committed CLAUDE.md with architecture, commands and landmines; an Explore sub-agent so wide searches
+     never pollute context; read-only permissions by default.
+     <b>Measure:</b> time to first merged PR, and the number of questions escalated to a senior.</p>
+
+  <h2>5. Case study B - the automated reviewer</h2>
+  <p><b>Problem:</b> review latency blocks the team; trivial issues consume senior attention.</p>
+  <p><b>Design:</b> a read-only reviewer sub-agent with a strict output contract (severity, file, line, why, suggested
+     fix), invoked headlessly in CI via <code>claude -p</code> on the PR diff, posting one structured comment. Hooks run
+     format and lint first so the reviewer never spends attention on style. Humans still approve; the bot never merges.</p>
+  <p><b>Failure mode to design for:</b> noise. A reviewer that posts 40 comments gets muted in a week. Cap it at the
+     five highest-severity findings and measure the percentage of comments that get acted on - that ratio is the real
+     quality metric.</p>
+
+  <h2>6. Case study C - the internal ops agent</h2>
+  <p><b>Problem:</b> support keeps asking engineers to run read-only queries.</p>
+  <p><b>Design:</b> an MCP server exposing three narrow, validated, read-only tools (no raw SQL); a skill defining the
+     triage procedure and output format; deny rules on everything else; every call logged with the requesting user.</p>
+  <p><b>Why it is safe enough:</b> credentials live in the server, not the model; the tool surface is three functions,
+     not a database; and results are capped in size. <b>Measure:</b> engineer interrupts per week, and query error rate.</p>
+
+  <h2>7. Staff-level interview bank</h2>
+
+  <details class="q"><summary>Walk me through how you would introduce Claude Code to a 30-person engineering org.</summary>
+    <p>Pilot with one team on a real repo. Ship CLAUDE.md and a shared settings.json with allow/ask/deny lists and
+       formatting hooks. Add two or three sub-agents that address that team's actual bottleneck. Measure cycle time and
+       review latency against a baseline. Write the safety policy before expanding, then roll out team by team with the
+       artifacts, not just the licences. Tooling spreads easily; conventions do not.</p>
+  </details>
+
+  <details class="q"><summary>How do you stop agent-generated code from degrading quality?</summary>
+    <p>Same controls as human code plus two: an eval set for the prompts and agents themselves, and hooks that make
+       formatting, linting and tests non-negotiable. Every change still lands as a reviewed PR. The failure mode is
+       volume - more diffs than the team can review - so cap parallelism at review capacity.</p>
+  </details>
+
+  <details class="q"><summary>Single agent, sub-agents, or a team - how do you decide?</summary>
+    <p>Start single. Add sub-agents when context pollution or parallel independent work is the bottleneck. Use a team
+       only when the parts genuinely depend on each other and coordination is the problem. Each step multiplies cost
+       and adds failure modes, so the burden of proof rises with each one.</p>
+  </details>
+
+  <details class="q"><summary>Your agent costs tripled after a feature launch. How do you investigate?</summary>
+    <p>Read the logs: tokens per completed task, split input/output/cache-read, by feature. Usually one of - history
+       growing unbounded, cache misses from a prefix that now varies, a deep-tier model on shallow work, or a retry
+       loop firing repeatedly. Fix the biggest contributor, re-run the eval to confirm quality held, then set a hard
+       budget per task so it cannot happen silently again.</p>
+  </details>
+
+  <details class="q"><summary>How do you evaluate an agent, as opposed to a single prompt?</summary>
+    <p>Outcome-based: did the task actually complete - tests green, ticket resolved, file correct? Plus trajectory
+       metrics: steps taken, tools called, retries, cost per success. A prompt is graded on its answer; an agent is
+       graded on the end state of the world.</p>
+  </details>
+
+  <details class="q"><summary>Convince a sceptical security lead that this is safe to adopt.</summary>
+    <p>Do not argue capability - present controls. Scoped permissions per project, deny lists on secrets and
+       destructive commands, deterministic hooks, no production credentials, everything landing as a reviewed PR,
+       full audit logging, and a tested kill switch. Then propose a bounded pilot on a non-sensitive repo with an
+       agreed review date. Security leads say yes to bounded risk, not to enthusiasm.</p>
+  </details>
+
+  <details class="q"><summary>What is the most common architectural mistake you see?</summary>
+    <p>Reaching for autonomy before building verification. Teams add agents, parallelism and multi-agent orchestration
+       while still having no eval set and no automated definition of done. The order should be inverted: make success
+       measurable, then add autonomy up to the level your verification can actually catch.</p>
+  </details>
+
+  <div class="assign">
+    <b>Capstone</b>
+    Pick one real workflow at your job and ship it end to end: CLAUDE.md, permission rules, at least one hook, one
+    sub-agent, one skill, and one plugin or MCP server. Then write a one-page design doc with an architecture diagram,
+    the eval set and baseline scores, the cost per completed task, the failure modes and their mitigations, and the
+    measured before/after. That document is simultaneously your portfolio piece and your interview script.
+  </div>
+
+  <div class="pager">
+    <a href="11-cowork-projects-artifacts.html">&larr; Module 11</a>
+    <a href="13-ai-fluency-4d.html">Module 13: AI Fluency &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar. End of course - now go build something and measure it.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

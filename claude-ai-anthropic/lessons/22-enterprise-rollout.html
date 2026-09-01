@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 22 - Enterprise rollout: the five decisions</title>
+<meta name="description" content="Structure and identity, access, governance, spend and visibility - the five organisation-wide decisions that shape a Claude Enterprise rollout, and how they cascade.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 22 &middot; Track E</span>
+    <h1>Enterprise rollout</h1>
+    <p>Five decisions determine whether Claude becomes infrastructure at your company or a pile of individual
+       subscriptions nobody governs. They depend on each other, so the order matters.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 22</div>
+
+  <h2>1. The five decisions, in dependency order</h2>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "Decision order (each one constrains the next)",
+      "steps": ["1. Structure & identity", "2. Access", "3. Governance", "4. Spend", "5. Visibility"],
+      "fail": {
+        "at": 0,
+        "label": "Started with seats and connectors",
+        "then": ["Identity retrofitted later", "Orphaned accounts, messy offboarding", "Governance bolted on", "Painful migration"]
+      },
+      "tip": "Identity first, always. Every later decision - who has access, who is governed, whose spend, whose activity - is expressed in terms of identity. Getting it wrong is the expensive one to reverse."
+    }
+    </script>
+  </div>
+
+  <h2>2. Decision 1 - Structure and identity</h2>
+  <table>
+    <thead><tr><th>Choice</th><th>Question</th><th>Cost of changing later</th></tr></thead>
+    <tbody>
+      <tr><td>One organisation or several</td><td>Do subsidiaries or regions need hard separation?</td><td><b>High</b> - splitting later means migrating users and content</td></tr>
+      <tr><td>SSO and directory sync</td><td>Is identity owned by your IdP, or by email invitations?</td><td>Medium - but invitation sprawl is painful to unwind</td></tr>
+      <tr><td>Domain capture</td><td>Do personal accounts on the company domain get absorbed?</td><td>Medium - and it surfaces shadow usage you did not know about</td></tr>
+      <tr><td>Workspace / team layout</td><td>Mirror the org chart, or mirror how work actually flows?</td><td>Low to medium</td></tr>
+    </tbody>
+  </table>
+  <div class="tip">
+    <b>Do domain capture early</b>
+    People are already using AI on their work email. Capturing those accounts brings shadow usage under governance
+    instead of leaving it invisible - and it is far easier before the population grows.
+  </div>
+
+  <h2>3. Decision 2 - Access</h2>
+  <ul>
+    <li><b>Who gets a seat, and in what order?</b> A staged rollout with a real pilot beats company-wide day one.</li>
+    <li><b>Which surfaces?</b> Chat for everyone is a different risk profile from Claude Code with repo access.</li>
+    <li><b>Which connectors and data sources?</b> Every connector widens what the assistant can see - approve them
+        deliberately, and confirm they respect existing permissions.</li>
+    <li><b>Guests and contractors.</b> Decide before someone asks at 5pm on a Friday.</li>
+  </ul>
+
+  <div class="warn">
+    <b>Connectors are the permission question, not the feature question</b>
+    Retrieval must inherit the underlying system's access controls. If it does not, you have built a way for people to
+    read documents they were never entitled to see - and it will surface in an audit, not a bug report.
+  </div>
+
+  <h2>4. Decision 3 - Governance</h2>
+  <table>
+    <thead><tr><th>Area</th><th>What to decide</th></tr></thead>
+    <tbody>
+      <tr><td>Acceptable use</td><td>Which data classifications may be used where; what is prohibited outright</td></tr>
+      <tr><td>Data handling</td><td>Retention, residency, what your plan does and does not do with inputs - get this in writing</td></tr>
+      <tr><td>Agent autonomy</td><td>Which permission modes are allowed on which repos; who may run unsupervised sessions</td></tr>
+      <tr><td>Shared artifacts</td><td>Review process for team skills, plugins, MCP servers and sub-agents</td></tr>
+      <tr><td>Disclosure</td><td>When AI assistance must be declared - in code, in documents, with clients</td></tr>
+      <tr><td>Incident response</td><td>What happens when something leaks or an agent does damage; who is on call</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5. Decision 4 - Spend</h2>
+  <ul>
+    <li><b>Seats versus API.</b> Internal productivity is a seat cost; customer-facing features are variable API cost.
+        Budget them separately or the finance conversation goes badly.</li>
+    <li><b>Caps and alerts.</b> Per workspace, with alerting before the ceiling - not at it.</li>
+    <li><b>Chargeback model.</b> Central budget, or per business unit? Decide before the first big invoice.</li>
+    <li><b>The failure mode.</b> An agent bug that loops is the most common overspend, and it happens outside working
+        hours. Caps are the control; monitoring is the detection.</li>
+  </ul>
+
+  <h2>6. Decision 5 - Visibility</h2>
+  <table>
+    <thead><tr><th>Signal</th><th>Answers</th></tr></thead>
+    <tbody>
+      <tr><td>Active users and depth of use</td><td>Is it adopted, or bought and ignored?</td></tr>
+      <tr><td>Usage by team and surface</td><td>Where is the value concentrating? Who needs enablement?</td></tr>
+      <tr><td>Spend per team over time</td><td>Is unit cost improving as people get better at it?</td></tr>
+      <tr><td>Audit events</td><td>Who did what, when - the evidence for security and compliance</td></tr>
+    </tbody>
+  </table>
+  <div class="tip">
+    <b>Set the success metric before the pilot, not after</b>
+    "People like it" is not a renewal case. Pick two or three outcome measures - cycle time, hours returned, tickets
+    deflected - and baseline them in week zero, while you still can.
+  </div>
+
+  <h2>7. How the decisions cascade</h2>
+  <table>
+    <thead><tr><th>Change this</th><th>And this moves</th></tr></thead>
+    <tbody>
+      <tr><td>Split into two organisations</td><td>Access lists, governance policies, spend caps and reporting all fork</td></tr>
+      <tr><td>Enable a new connector</td><td>Governance review needed; visibility must cover the new data path</td></tr>
+      <tr><td>Loosen agent autonomy</td><td>Governance controls and audit requirements both increase</td></tr>
+      <tr><td>Move from seats to heavy API use</td><td>Spend model, caps and chargeback all change shape</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8. The rollout plan you keep</h2>
+  <p>Record each decision in one living document: <b>what you decided</b>, <b>who owns it</b>, <b>when it is
+     revisited</b>, and <b>what it would cost to change</b>. That document is what you walk stakeholders through at
+     kickoff, and what your successor reads on day one.</p>
+
+<pre><code># Claude rollout plan
+
+## 1. Structure & identity
+Decision: single org, SSO via Okta, directory sync on, domain capture enabled
+Owner: IT Identity  |  Review: quarterly  |  Reversal cost: HIGH
+
+## 2. Access
+Decision: Phase 1 engineering (Code + Chat), Phase 2 ops (Chat + Cowork), guests denied
+Owner: Platform lead  |  Review: end of each phase  |  Reversal cost: LOW
+
+## 3. Governance
+Decision: no restricted data in any surface; agent autonomy capped at plan+accept-edits
+          on non-production repos; team plugins require security review
+Owner: Security  |  Review: monthly during pilot  |  Reversal cost: MEDIUM
+
+## 4. Spend
+Decision: per-workspace caps, alert at 70%, chargeback per business unit from Q3
+Owner: Finance partner  |  Review: monthly  |  Reversal cost: LOW
+
+## 5. Visibility
+Decision: weekly adoption + spend review; audit export to SIEM
+Owner: Platform lead  |  Review: continuous  |  Reversal cost: LOW</code></pre>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Draft the five decisions for your own organisation, even hypothetically.</li>
+      <li>For each, write the reversal cost. Notice which ones you must get right first time.</li>
+      <li>List every connector someone will ask for and decide the approval bar now.</li>
+      <li>Define the pilot's success metrics and baseline them today.</li>
+      <li>Write the incident runbook: an agent damaged something - what happens in the first hour?</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Produce a complete rollout plan for a fictional 500-person company: all five decisions, owners, review cadence,
+    reversal costs, a phased access plan, the governance policy, spend model with caps, and the metrics dashboard.
+    Then write the one-page version you would present to an executive - the compression is the hard part.
+  </div>
+
+  <h2>9. Interview drill</h2>
+
+  <details class="q"><summary>Which of the five decisions is hardest to reverse, and why?</summary>
+    <p>Structure and identity. Everything else is expressed in terms of it, so splitting or re-federating later means
+       migrating users, content and policy simultaneously. Access and spend decisions are comparatively cheap to
+       change.</p>
+  </details>
+
+  <details class="q"><summary>Security asks how you prevent data leakage in a rollout.</summary>
+    <p>Layered: identity through SSO with proper offboarding, data classification rules on which surfaces may be used,
+       connectors that inherit source permissions, agent autonomy caps with deny rules on secrets, audit events
+       exported to the SIEM, and a documented incident path. Then a bounded pilot with a review date.</p>
+  </details>
+
+  <details class="q"><summary>How do you justify renewal after a pilot?</summary>
+    <p>Outcome metrics baselined at week zero - cycle time, hours returned, deflection rate - alongside adoption depth
+       and cost per completed task. Satisfaction scores support the case but never carry it.</p>
+  </details>
+
+  <details class="q"><summary>A team wants full autonomy on production repos. Your answer?</summary>
+    <p>No, and here is the alternative: bounded autonomy on non-production repos, agentic changes landing as reviewed
+       PRs, hooks enforcing tests, and no production credentials in the agent's environment. Then revisit with data
+       from that arrangement rather than arguing in the abstract.</p>
+  </details>
+
+  <div class="pager">
+    <a href="21-ai-native-sdlc.html">&larr; Module 21</a>
+    <a href="23-bedrock-vertex.html">Module 23: Bedrock &amp; Vertex AI &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar. Five-decision frame follows Anthropic's enterprise deployment course; admin features vary by plan.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

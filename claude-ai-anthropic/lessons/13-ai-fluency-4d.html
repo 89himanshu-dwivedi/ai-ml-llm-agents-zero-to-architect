@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 13 - AI Fluency: the 4D framework</title>
+<meta name="description" content="Delegation, Description, Discernment and Diligence - the four competencies of effective, efficient, ethical and safe collaboration with AI.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 13 &middot; Track A</span>
+    <h1>AI Fluency: the 4D framework</h1>
+    <p>Delegation, Description, Discernment, Diligence. Four competencies that survive every model release, because
+       they describe what <i>you</i> do - not which button the vendor shipped this quarter.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 13</div>
+
+  <div class="info">
+    <b>Source</b>
+    This module follows the AI Fluency framework developed by Rick Dakan (Ringling College) and Joseph Feller
+    (University College Cork), taught in Anthropic's <i>AI Fluency: Framework &amp; Foundations</i>. The framing is
+    theirs; the engineering commentary and the drills are mine.
+  </div>
+
+  <h2>1. What AI fluency actually means</h2>
+  <p>Four adverbs, and they are not decoration:</p>
+  <table>
+    <thead><tr><th>Word</th><th>Question it answers</th></tr></thead>
+    <tbody>
+      <tr><td><b>Effectively</b></td><td>Did you get the outcome you wanted?</td></tr>
+      <tr><td><b>Efficiently</b></td><td>Was it worth the time, tokens and attention it cost?</td></tr>
+      <tr><td><b>Ethically</b></td><td>Was it honest about authorship, sources and consent?</td></tr>
+      <tr><td><b>Safely</b></td><td>Did it avoid harm - to data, to people, to your organisation?</td></tr>
+    </tbody>
+  </table>
+  <p>Most "prompt tips" content only addresses the first. The other three are what makes the difference between a
+     personal trick and something an organisation can adopt.</p>
+
+  <h2>2. Three ways to engage</h2>
+  <table>
+    <thead><tr><th>Mode</th><th>Who does the work</th><th>Example</th><th>Main risk</th></tr></thead>
+    <tbody>
+      <tr><td><b>Automation</b></td><td>AI executes a defined task you specified</td><td>"Convert these 200 files to JSON"</td><td>Silent failure at scale</td></tr>
+      <tr><td><b>Augmentation</b></td><td>You and AI work together, back and forth</td><td>Drafting a design doc together</td><td>Anchoring on the first draft</td></tr>
+      <tr><td><b>Agency</b></td><td>AI pursues a goal with its own sub-decisions</td><td>An agent fixing a failing test suite</td><td>Unbounded actions, unclear accountability</td></tr>
+    </tbody>
+  </table>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "The 4D loop",
+      "steps": ["Delegation: who does what", "Description: communicate the task", "Discernment: evaluate the result", "Diligence: own the outcome"],
+      "fail": {
+        "at": 2,
+        "label": "Output looks wrong",
+        "then": ["Do not just retry", "Diagnose: was it description or delegation?", "Refine the description", "Re-run and re-evaluate"],
+        "tag": "The Description-Discernment loop"
+      },
+      "tip": "Retrying the same prompt hoping for a better roll is the single most common waste in AI work. Every failed output is information about which D was weak."
+    }
+    </script>
+  </div>
+
+  <h2>3. D1 - Delegation</h2>
+  <p>Deciding what to hand over, to which system, and how much autonomy to grant. Three sub-skills:</p>
+  <ul>
+    <li><b>Problem awareness</b> - what is the actual goal, what does success look like, what constraints are real?</li>
+    <li><b>Platform awareness</b> - what is this particular system good and bad at? A model with no web access cannot
+        know today's price.</li>
+    <li><b>Task delegation</b> - split the work: which parts are AI's, which are yours, which are shared.</li>
+  </ul>
+
+  <div class="tip">
+    <b>Engineer's version</b>
+    Delegation is architecture. "Should the model do this, or should deterministic code do this?" is the same question
+    as "should this be an agent or a workflow". If the task has one right answer and a rule can produce it, do not hand
+    it to a probabilistic system.
+  </div>
+
+  <h2>4. D2 - Description</h2>
+  <p>Communicating what you want. Three layers, and most people only use the first:</p>
+  <table>
+    <thead><tr><th>Layer</th><th>You specify</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><b>Product</b></td><td>What the output should be</td><td>"A one-page brief, 5 bullets, no preamble"</td></tr>
+      <tr><td><b>Process</b></td><td>How to get there</td><td>"First list assumptions, then evaluate each against the data"</td></tr>
+      <tr><td><b>Performance</b></td><td>What role and manner to adopt</td><td>"Act as a sceptical reviewer; challenge weak claims"</td></tr>
+    </tbody>
+  </table>
+  <p>Foundational techniques that raise description quality: give context and audience, state constraints explicitly,
+     show an example of a good answer, ask for the format you actually need, and say what to do when uncertain
+     ("if the data does not support a conclusion, say so").</p>
+
+  <h2>5. D3 - Discernment</h2>
+  <p>Critical evaluation, in three places:</p>
+  <ul>
+    <li><b>Product discernment</b> - is the output correct, complete, well-sourced, appropriately confident?</li>
+    <li><b>Process discernment</b> - was the reasoning sound, or did it reach the right answer for the wrong reason?</li>
+    <li><b>Performance discernment</b> - is the behaviour drifting - agreeing with you too readily, padding length,
+        hedging everything?</li>
+  </ul>
+
+  <div class="warn">
+    <b>Fluency is calibrated trust, not maximum trust or zero trust</b>
+    Trusting everything produces confident errors in your work. Trusting nothing means you check every line by hand and
+    gain nothing. The skill is knowing which parts of a given task sit where on that spectrum - which is exactly what
+    module 14 gives you a model for.
+  </div>
+
+  <h2>6. D4 - Diligence</h2>
+  <table>
+    <thead><tr><th>Type</th><th>Means</th><th>In practice</th></tr></thead>
+    <tbody>
+      <tr><td><b>Creation diligence</b></td><td>Responsible choices while producing</td><td>Verify facts, respect sources and licences, do not feed confidential data into systems not cleared for it.</td></tr>
+      <tr><td><b>Transparency diligence</b></td><td>Honest disclosure of AI involvement</td><td>Say what was AI-assisted and how. An AI diligence statement is the formal version.</td></tr>
+      <tr><td><b>Deployment diligence</b></td><td>Owning the consequences</td><td>You are accountable for what you ship. "The model wrote it" is not a defence in a review, an audit, or a court.</td></tr>
+    </tbody>
+  </table>
+
+<pre><code>AI diligence statement - template
+
+Tools used:      Claude (model tier, approximate date range)
+Where used:      research synthesis, first-draft structure, code review of module X
+Where not used:  the analysis and conclusions; all figures verified against source data
+Human review:    every claim checked against a primary source; author accepts responsibility
+                 for accuracy and for all final decisions.</code></pre>
+
+  <h2>7. Applying the 4Ds to agents</h2>
+  <p>Everything in modules 03 to 12 is the 4Ds with tooling attached:</p>
+  <table>
+    <thead><tr><th>D</th><th>In Claude Code terms</th></tr></thead>
+    <tbody>
+      <tr><td>Delegation</td><td>Permission modes, sub-agent scoping, choosing workflow vs agent</td></tr>
+      <tr><td>Description</td><td>CLAUDE.md, skills, output contracts, plan mode</td></tr>
+      <tr><td>Discernment</td><td>Reviewing diffs, evals, test-based verification</td></tr>
+      <tr><td>Diligence</td><td>Hooks, audit logs, human sign-off, disclosure of AI-authored code</td></tr>
+    </tbody>
+  </table>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Take a task you did with AI this week. Name which D was weakest and rewrite that part.</li>
+      <li>Rewrite one prompt to include all three description layers - product, process, performance.</li>
+      <li>Classify three of your recent tasks as automation, augmentation or agency. Was each one the right choice?</li>
+      <li>Write an AI diligence statement for something you actually shipped.</li>
+      <li>Take one bad output and diagnose it: description failure, delegation failure, or a model limitation?</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Write your team's one-page AI collaboration standard using the 4Ds as headings: what may be delegated and to what
+    autonomy level, the required description elements for a shared prompt, the review bar per risk tier, and the
+    disclosure rule. This is the document a manager can actually adopt - far more useful than a prompt library.
+  </div>
+
+  <h2>8. Interview drill</h2>
+
+  <details class="q"><summary>Explain the 4D framework and why it is model-agnostic.</summary>
+    <p>Delegation, Description, Discernment, Diligence - deciding what to hand over, communicating it, evaluating the
+       result, and owning the outcome. It describes human competencies rather than product features, so it survives
+       model and vendor changes. Prompt tricks expire; these do not.</p>
+  </details>
+
+  <details class="q"><summary>Automation, augmentation, agency - which is riskiest and why?</summary>
+    <p>Agency, because the system makes sub-decisions you never explicitly approved, so the failure surface is the
+       whole action space rather than one output. That is why agency needs bounded permissions, verification and a
+       human on irreversible steps.</p>
+  </details>
+
+  <details class="q"><summary>A junior keeps retrying prompts until something looks right. What are you teaching them?</summary>
+    <p>The Description-Discernment loop. Every unsatisfactory output is diagnostic information: unclear description,
+       wrong delegation, or a genuine model limitation. Identify which, then fix that specific thing. Re-rolling
+       optimises for output that looks convincing, not output that is correct.</p>
+  </details>
+
+  <div class="pager">
+    <a href="12-evals-cost-architecture.html">&larr; Module 12</a>
+    <a href="14-ai-capabilities-limits.html">Module 14: Capabilities &amp; limitations &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar. Framework credit: Rick Dakan &amp; Joseph Feller, via Anthropic's AI Fluency course.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

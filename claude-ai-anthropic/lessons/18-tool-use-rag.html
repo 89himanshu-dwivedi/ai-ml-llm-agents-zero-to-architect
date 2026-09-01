@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 18 - Tool use, RAG and agentic search</title>
+<meta name="description" content="Tool schema design, parallel and batch tool calls, then production RAG: chunking, embeddings, BM25 hybrid search, multi-index, reranking, contextual retrieval, citations, vision, PDFs and caching.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 18 &middot; Track C</span>
+    <h1>Tool use, RAG and agentic search</h1>
+    <p>Two ways to give a model knowledge it does not have: let it call your systems, or retrieve the right passage
+       before it answers. Production systems use both, and the failure modes are different.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 18</div>
+
+  <h2>1. Tool schema design</h2>
+  <p>The schema is a prompt. The model chooses a tool by reading the description and fills parameters by reading their
+     descriptions - so vague schemas produce wrong calls.</p>
+
+<pre><code>{
+  "name": "search_orders",
+  "description": "Search orders by customer email and optional status. Use when the user asks about a customer's order history. Do NOT use for a single known order id - use get_order for that.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "email":  { "type": "string", "description": "Customer email, exact match" },
+      "status": { "type": "string", "enum": ["open", "shipped", "cancelled"] },
+      "limit":  { "type": "integer", "minimum": 1, "maximum": 50, "default": 10 }
+    },
+    "required": ["email"]
+  }
+}</code></pre>
+
+  <table>
+    <thead><tr><th>Rule</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Say when NOT to use it</td><td>Disambiguates overlapping tools better than any positive description</td></tr>
+      <tr><td>Enums over free strings</td><td>Removes a whole class of invalid calls</td></tr>
+      <tr><td>Bound the result size</td><td>Protects the context window (module 17)</td></tr>
+      <tr><td>Never accept raw SQL or shell</td><td>The model is an untrusted caller by design</td></tr>
+      <tr><td>Make writes idempotent</td><td>Retries happen; double-charging must not</td></tr>
+    </tbody>
+  </table>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "Multi-turn tool conversation",
+      "steps": ["User asks", "Model requests tool(s)", "You validate + execute", "tool_result appended", "Model answers or calls again"],
+      "fail": {
+        "at": 2,
+        "label": "Model invented a parameter value",
+        "then": ["Validation rejects it", "Return the error as tool_result", "Model asks the user or retries correctly", "Never pass unvalidated input through"]
+      },
+      "tip": "Parallel tool calls in one turn are normal - handle a list of tool_use blocks, not just the first one, and return every matching tool_result."
+    }
+    </script>
+  </div>
+
+  <h2>2. When tools are the wrong answer</h2>
+  <p>A tool is right when the answer lives in a <b>system</b> you can query. RAG is right when the answer lives in
+     <b>text</b> you have to find. Asking a tool to "search all our documents" with no retrieval layer is just moving
+     the problem.</p>
+
+  <h2>3. RAG, properly</h2>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Production RAG pipeline",
+      "nodes": ["Documents", "Chunker", "Embeddings + BM25 index", "Retriever", "Reranker", "Claude"],
+      "route": [0, 1, 2, 3, 2, 4, 5],
+      "labels": ["ingest", "chunks + metadata", "index", "hybrid query", "candidates", "top-k", "grounded answer"],
+      "tip": "Most bad RAG is bad retrieval, not a bad model. If the right passage never reaches the prompt, no amount of prompt tuning saves the answer."
+    }
+    </script>
+  </div>
+
+  <table>
+    <thead><tr><th>Stage</th><th>Decisions that matter</th></tr></thead>
+    <tbody>
+      <tr><td><b>Chunking</b></td><td>Split on structure (headings, sections), not blind character counts. Overlap enough to avoid cutting a fact in half. Keep source, page and section as metadata.</td></tr>
+      <tr><td><b>Embeddings</b></td><td>Semantic similarity - finds paraphrases. Blind to exact identifiers and rare tokens.</td></tr>
+      <tr><td><b>BM25 / keyword</b></td><td>Exact terms - error codes, product IDs, function names. Blind to synonyms.</td></tr>
+      <tr><td><b>Hybrid</b></td><td>Run both and fuse the rankings. This is the single biggest quality jump in most systems.</td></tr>
+      <tr><td><b>Multi-index</b></td><td>Separate indexes per corpus (docs, tickets, code) with a router. Prevents one noisy corpus drowning the others.</td></tr>
+      <tr><td><b>Reranking</b></td><td>Retrieve 50, rerank, pass 5. Cheap accuracy - retrieval recall and prompt precision at once.</td></tr>
+      <tr><td><b>Contextual retrieval</b></td><td>Prepend a short document-level context sentence to each chunk before embedding, so an isolated chunk still knows what it belongs to. Big win on fragmented corpora.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <b>Evaluate retrieval separately from generation</b>
+    Measure "was the correct passage in the top-k?" independently of "was the answer good?". Otherwise you spend weeks
+    tuning prompts to compensate for a retriever that never returned the right chunk.
+  </div>
+
+  <h2>4. Agentic search</h2>
+  <p>Instead of a single retrieve-then-answer pass, the model searches, reads, decides it needs something else, and
+     searches again. Better on hard multi-hop questions; slower and costlier on easy ones.</p>
+  <ul>
+    <li>Bound the number of search iterations.</li>
+    <li>Make the search tool return snippets with IDs, not whole documents.</li>
+    <li>Log the query trail - it is the only way to debug why the answer went sideways.</li>
+    <li>Route: cheap single-pass retrieval for simple questions, agentic search only when the first pass is weak.</li>
+  </ul>
+
+  <h2>5. Citations, vision, PDFs</h2>
+  <table>
+    <thead><tr><th>Capability</th><th>Use it for</th><th>Trap</th></tr></thead>
+    <tbody>
+      <tr><td><b>Citations</b></td><td>Answers tied to the supplied source spans</td><td>Do not let the model free-write references - they are exactly where fabrication lives</td></tr>
+      <tr><td><b>Vision</b></td><td>Screenshots, diagrams, charts, scanned forms</td><td>Images are expensive in tokens; resize before sending</td></tr>
+      <tr><td><b>PDF input</b></td><td>Documents with layout that matters</td><td>Long PDFs blow the window - chunk and retrieve instead of dumping</td></tr>
+    </tbody>
+  </table>
+
+  <h2>6. Caching and batching in a RAG system</h2>
+  <ul>
+    <li><b>Cache the stable prefix</b> - system prompt, tool definitions, and any long reference block that does not
+        change between calls. Keep the order byte-identical or you get a miss.</li>
+    <li><b>Batch the ingestion</b> - embedding and contextualising a corpus is offline work; the batch endpoint is
+        roughly half price.</li>
+    <li><b>Semantic cache the answers</b> - repeat questions are extremely common in support workloads.</li>
+    <li><b>Do not cache what changes</b> - a cached prefix containing today's date or a user ID never hits.</li>
+  </ul>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Write a tool schema with an enum, a bounded limit and an explicit "do not use when" line.</li>
+      <li>Handle a turn with two parallel tool_use blocks and return both results.</li>
+      <li>Build a tiny RAG over 50 documents with embeddings only. Note what it misses.</li>
+      <li>Add BM25 and fuse the rankings. Measure retrieval recall before and after.</li>
+      <li>Add a reranker: retrieve 50, pass 5. Measure again.</li>
+      <li>Add contextual retrieval to the chunks and measure a third time.</li>
+      <li>Turn on prompt caching for the stable prefix and record the cost difference over 20 calls.</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Build a cited question-answering system over a real corpus of your own. Requirements: hybrid retrieval, reranking,
+    per-answer citations pointing at real chunk IDs, a retrieval-recall metric reported separately from answer
+    quality, and a cost-per-query figure. Then write down which single change moved recall the most - that answer is
+    what interviewers actually want to hear.
+  </div>
+
+  <h2>7. Interview drill</h2>
+
+  <details class="q"><summary>Embeddings or BM25?</summary>
+    <p>Both. Embeddings catch paraphrase and intent; BM25 catches exact identifiers, error codes and rare terms.
+       Hybrid fusion is the default for production because real queries contain both kinds of signal.</p>
+  </details>
+
+  <details class="q"><summary>What is contextual retrieval and why does it help?</summary>
+    <p>Prepending a short document-level context to each chunk before embedding, so a chunk that says "this dropped
+       12%" still carries which metric and which document it came from. It fixes the ambiguity that isolated chunks
+       otherwise lose.</p>
+  </details>
+
+  <details class="q"><summary>Answers are wrong but the prompt looks fine. Where do you look?</summary>
+    <p>Retrieval. Check whether the correct passage was in the top-k at all. If it was not, tune chunking, hybrid
+       search and reranking - prompt changes cannot recover information that never reached the model.</p>
+  </details>
+
+  <details class="q"><summary>How do you stop fabricated citations?</summary>
+    <p>Never let the model author references. Return chunks with IDs, instruct it to cite only those IDs, and validate
+       that every cited ID exists in the retrieved set before showing the answer.</p>
+  </details>
+
+  <details class="q"><summary>When is agentic search worth it over single-pass RAG?</summary>
+    <p>Multi-hop questions where the second query depends on the first result. Bound the iterations and route to it
+       selectively - on simple lookups it adds latency and cost for no gain.</p>
+  </details>
+
+  <div class="pager">
+    <a href="17-platform-console-agent-loop.html">&larr; Module 17</a>
+    <a href="19-agents-workflows.html">Module 19: Agents &amp; workflows &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 20 - MCP advanced: sampling, roots, notifications, transports</title>
+<meta name="description" content="Beyond MCP basics - sampling, progress notifications and logging, roots, the JSON-RPC message spec, stdio handshake, Streamable HTTP and SSE, stateless scaling and transport choice.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="kicker">Module 20 &middot; Track D</span>
+    <h1>MCP: advanced topics</h1>
+    <p>Module 10 connected a server. This one is the protocol itself - the features that make a server genuinely
+       useful, and the transport decisions that decide whether it scales.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="crumbs"><a href="../index.html">Course home</a> / Module 20</div>
+
+  <h2>1. Sampling: the server asks the client for a model call</h2>
+  <p>Normally the client calls the model and the server just answers tool calls. <b>Sampling</b> inverts one piece: the
+     server can request a completion <i>through the connected client</i>.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "type": "arch",
+      "title": "Sampling flow",
+      "nodes": ["Server", "Client", "Model", "Human approval"],
+      "route": [0, 1, 3, 1, 2, 1, 0],
+      "labels": ["sampling request", "show to user", "approve", "call model", "completion", "result back to server"],
+      "tip": "The server needs no API key and pays no inference cost - the client does. That is the whole point: cost and model choice stay with the user, not with every server author."
+    }
+    </script>
+  </div>
+
+  <table>
+    <thead><tr><th>Why it matters</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Cost shifts to the client</td><td>Server authors do not need their own model billing</td></tr>
+      <tr><td>The user keeps control</td><td>Requests can be surfaced for approval before they run</td></tr>
+      <tr><td>Servers stay thin</td><td>Summarise, classify or extract without embedding an AI stack in the server</td></tr>
+      <tr><td>Trust boundary</td><td>A server could ask for anything - clients should show and gate these requests</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Progress notifications and logging</h2>
+  <p>Long-running tools go silent, and silence looks like a hang. MCP has one-way <b>notification</b> messages for
+     exactly this - progress updates and log lines that need no reply.</p>
+  <ul>
+    <li>Report progress with a current/total pair so a client can render a real bar.</li>
+    <li>Emit structured log messages at sensible levels rather than printing to stdout - on stdio transport, stray
+        stdout output corrupts the protocol stream.</li>
+    <li>Long jobs with no feedback get cancelled by users who assume they are stuck.</li>
+  </ul>
+
+  <h2>3. Roots: scoped filesystem access</h2>
+  <p><b>Roots</b> let a client tell a server which directories it may work in. The server discovers the allowed
+     locations instead of guessing paths, and the boundary is explicit.</p>
+  <div class="tip">
+    <b>Roots are a security feature dressed as a convenience</b>
+    Without them a filesystem server has to be told paths and can be talked into wandering. With them, the client
+    declares the sandbox and file discovery stays inside it.
+  </div>
+
+  <h2>4. The message layer</h2>
+  <table>
+    <thead><tr><th>Message type</th><th>Shape</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td><b>Request / result</b></td><td>Has an id; expects a response</td><td>Tool calls, listing tools, reading resources</td></tr>
+      <tr><td><b>Notification</b></td><td>No id; no response</td><td>Progress, logs, "the tool list changed"</td></tr>
+      <tr><td><b>Error</b></td><td>Result carrying an error object</td><td>Failed calls, with a code and message</td></tr>
+    </tbody>
+  </table>
+  <p>Communication is <b>bidirectional</b>: servers can initiate requests to clients too - which is exactly how
+     sampling works.</p>
+
+  <h2>5. Transports</h2>
+
+  <h3>stdio</h3>
+  <p>Client launches the server as a subprocess and talks over standard input and output. Ideal for local tools:
+     no ports, no auth layer, process lifetime tied to the client.</p>
+  <table>
+    <thead><tr><th>Detail</th><th>Consequence</th></tr></thead>
+    <tbody>
+      <tr><td>Initialization handshake is required</td><td>Capabilities are exchanged before any tool call - skip it and nothing works</td></tr>
+      <tr><td>stdout is the protocol channel</td><td>Never <code>print()</code> in a stdio server; log to stderr or via the protocol</td></tr>
+      <tr><td>One client, one process</td><td>No horizontal scaling - by design</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Streamable HTTP and SSE</h3>
+  <p>For remote servers. HTTP carries client-to-server requests; Server-Sent Events give the server a channel to push
+     to the client - needed for notifications and server-initiated requests such as sampling.</p>
+
+  <div class="flow">
+    <script type="application/json">
+    {
+      "title": "Stateful vs stateless remote server",
+      "steps": ["Client connects", "Session established", "Server can push (SSE)", "Sampling + progress work", "Scales vertically"],
+      "fail": {
+        "at": 1,
+        "label": "Stateless mode behind a load balancer",
+        "then": ["Any replica can serve any request", "Scales horizontally", "But: no server-initiated requests", "Sampling and progress are lost"],
+        "tag": "The trade you are actually making"
+      },
+      "tip": "Stateless HTTP buys horizontal scaling and costs you the features that need a persistent connection. Decide which you need before you pick, because retrofitting is painful."
+    }
+    </script>
+  </div>
+
+  <table>
+    <thead><tr><th>Requirement</th><th>Transport</th></tr></thead>
+    <tbody>
+      <tr><td>Local dev tool, single user</td><td>stdio</td></tr>
+      <tr><td>Shared team server with progress and sampling</td><td>Streamable HTTP, stateful sessions</td></tr>
+      <tr><td>High-volume service behind a load balancer</td><td>Stateless HTTP - accept the feature loss</td></tr>
+      <tr><td>Cross-network, multiple orgs</td><td>Remote HTTP with proper auth and per-tenant scoping</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <b>Configuration flags silently change what works</b>
+    Turning off session state or streaming does not raise an error - it just makes server-initiated features
+    unavailable. If sampling or progress "stopped working" after a deployment change, check the transport
+    configuration before you debug the code.
+  </div>
+
+  <h2>6. Production concerns</h2>
+  <ul>
+    <li><b>Auth.</b> Remote servers need real authentication and per-user scoping. Never a single shared god-token.</li>
+    <li><b>Multi-tenancy.</b> One user's roots and credentials must never leak into another's session.</li>
+    <li><b>Timeouts and cancellation.</b> Support cancellation, or a runaway tool holds the session forever.</li>
+    <li><b>Versioning.</b> Changing a tool's schema breaks every client. Add, deprecate, then remove.</li>
+    <li><b>Observability.</b> Log every tool call with caller, arguments and duration - this is your audit trail.</li>
+    <li><b>Result size.</b> Cap it at the server. The client's context window is a shared resource you are spending.</li>
+  </ul>
+
+  <div class="prac">
+    <b>Practice now</b>
+    <ol>
+      <li>Add progress notifications to a long-running tool and watch them render in a client.</li>
+      <li>Implement a sampling request in a server and observe the approval prompt on the client side.</li>
+      <li>Add roots support and verify the server refuses paths outside the declared directories.</li>
+      <li>Run the same server over stdio, then over HTTP with sessions, then stateless. Note which features stop working.</li>
+      <li>Deliberately <code>print()</code> in a stdio server and watch the protocol break - then fix it properly.</li>
+    </ol>
+  </div>
+
+  <div class="assign">
+    <b>Assignment</b>
+    Take the read-only server from module 10 and make it production-grade: progress notifications, roots-scoped file
+    access, capped results, cancellation support, structured logging, and a documented transport choice with the
+    trade-off written down. Then deploy it remotely with authentication and connect from a second machine.
+  </div>
+
+  <h2>7. Interview drill</h2>
+
+  <details class="q"><summary>What is sampling and why does it exist?</summary>
+    <p>A server requesting a model completion through the connected client. It keeps inference cost, model choice and
+       user consent on the client side, so server authors can use a model without shipping API keys or an AI stack.</p>
+  </details>
+
+  <details class="q"><summary>Request versus notification?</summary>
+    <p>Requests carry an id and expect a result; notifications carry no id and expect nothing back. Progress and log
+       messages are notifications, which is why they can flow freely during a long operation without blocking.</p>
+  </details>
+
+  <details class="q"><summary>Why can't a stateless HTTP MCP server do sampling?</summary>
+    <p>Sampling is server-initiated and needs a persistent channel back to a specific client session. Stateless mode
+       exists so any replica can serve any request behind a load balancer - which is precisely what removes that
+       channel.</p>
+  </details>
+
+  <details class="q"><summary>What do roots solve?</summary>
+    <p>Scoped file access. The client declares which directories the server may touch, so file discovery is both safe
+       and convenient instead of the server being handed arbitrary paths.</p>
+  </details>
+
+  <details class="q"><summary>Most common stdio bug?</summary>
+    <p>Writing to stdout. That stream is the protocol channel, so a stray print corrupts messages. Log to stderr or
+       through protocol logging notifications.</p>
+  </details>
+
+  <div class="pager">
+    <a href="19-agents-workflows.html">&larr; Module 19</a>
+    <a href="21-ai-native-sdlc.html">Module 21: AI-native SDLC &rarr;</a>
+  </div>
+
+  <footer class="ft">Claude AI: Zero to Architect &middot; Himanshu Kumar. Protocol details evolve - check the current MCP specification.</footer>
+
+</div>
+
+<script src="../assets/anim.js" defer></script>
+</body>
+</html>
