@@ -7,7 +7,10 @@ multi-agent design, Claude Code, Skills, MCP, evaluation and cost control.
 
 **Animated course site:** open [`index.html`](index.html) in a browser (or via GitHub Pages).
 The HTML version carries the animated flow diagrams - request paths, agent loops, and the failure lane next to
-every happy path. Markdown here is the reference copy.
+every happy path.
+
+**Reading on GitHub?** Every lesson also exists as plain Markdown with Mermaid diagrams:
+**[md/README.md](md/README.md)** - no download, no browser needed, renders inline right here.
 
 **Coverage:** every course in [Claude Academy](https://academy.claude.com/courses) - all four collections plus the
 tutorial library - is mapped to a module here in [`academy-map.html`](academy-map.html), including an honest note on
