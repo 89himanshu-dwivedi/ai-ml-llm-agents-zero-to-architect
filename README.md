@@ -47,7 +47,7 @@ I add one folder at a time as I work through a topic. Each folder holds my notes
 - Built a production RAG platform with SSE streaming, citations, and semantic caching to cut LLM cost
 - Work with Python, FastAPI, Docker, LangChain-style agents, Agentforce and Data Cloud
 - B.Tech in Computer Science, AKTU Lucknow
-- [GitHub](https://github.com/89himanshu-dwivedi)
+- [GitHub](https://github.com/89himanshu-dwivedi) · [LinkedIn](https://www.linkedin.com/in/himanshukumar-sf/) · [X](https://x.com/kum60094) · [Trailblazer](https://www.salesforce.com/trailblazer/hdwivedi2) · [Email](mailto:himanshu.jee.1996@gmail.com)
 
 ---
 
