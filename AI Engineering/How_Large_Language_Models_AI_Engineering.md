@@ -1075,7 +1075,6 @@ LLM
 
 ---
 
-# 28. LinkedIn Post
 
 ## How LLMs Actually Work — And Why AI Engineers Must Know This
 

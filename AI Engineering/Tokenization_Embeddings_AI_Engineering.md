@@ -842,7 +842,6 @@ ANSWER
 
 ---
 
-# LinkedIn Post
 
 ## Tokenization & Embeddings — The Two Gateways Behind Modern AI
 

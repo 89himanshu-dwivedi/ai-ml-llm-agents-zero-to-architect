@@ -1015,7 +1015,6 @@ Need stable behavior at scale
 
 ---
 
-# 35. 🔥 LinkedIn Post
 
 ## Prompt Engineering is NOT just writing better prompts.
 
